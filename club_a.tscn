@@ -1,0 +1,21 @@
+[gd_scene load_steps=4 format=3 uid="uid://b2nxgxbe2sfk6"]
+
+[ext_resource type="Script" path="res://card.gd" id="1_7rmbf"]
+[ext_resource type="Texture2D" uid="uid://c6ny3ejux5hba" path="res://images/0 - Unnamed (Front).png" id="1_wjmsr"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_01prt"]
+size = Vector2(74, 102.5)
+
+[node name="ClubA" type="Node2D"]
+script = ExtResource("1_7rmbf")
+
+[node name="front" type="Sprite2D" parent="."]
+texture = ExtResource("1_wjmsr")
+
+[node name="Area2D" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+shape = SubResource("RectangleShape2D_01prt")
+
+[connection signal="mouse_entered" from="Area2D" to="." method="_on_area_2d_mouse_entered"]
+[connection signal="mouse_exited" from="Area2D" to="." method="_on_area_2d_mouse_exited"]

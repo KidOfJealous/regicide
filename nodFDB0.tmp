@@ -1,0 +1,18 @@
+[gd_scene load_steps=4 format=3 uid="uid://crtljsp61enxk"]
+
+[ext_resource type="Script" path="res://Cards.gd" id="1_0uav6"]
+[ext_resource type="Script" path="res://card.gd" id="3_bu6c3"]
+[ext_resource type="PackedScene" uid="uid://dh0hu2jk5ried" path="res://card.tscn" id="3_oj1rh"]
+
+[node name="Node2D" type="Node2D"]
+
+[node name="Cards" type="Node2D" parent="."]
+script = ExtResource("1_0uav6")
+
+[node name="Club2" parent="Cards" instance=ExtResource("3_oj1rh")]
+position = Vector2(229, 199)
+script = ExtResource("3_bu6c3")
+
+[node name="ClubA" parent="Cards" instance=ExtResource("3_oj1rh")]
+position = Vector2(96, 232)
+script = ExtResource("3_bu6c3")
