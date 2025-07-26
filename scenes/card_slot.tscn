@@ -1,0 +1,33 @@
+[gd_scene load_steps=4 format=3 uid="uid://cm2fnm3ujcipn"]
+
+[ext_resource type="Script" uid="uid://bk6xc48nb5il7" path="res://scripts/card_slot.gd" id="1_ippwf"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_wmf85"]
+size = Vector2(73.2, 102.4)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_qx3y6"]
+bg_color = Color(0.6, 0.6, 0.6, 0.392157)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_blend = true
+
+[node name="CardSlot" type="Node2D"]
+script = ExtResource("1_ippwf")
+
+[node name="Area2D" type="Area2D" parent="."]
+collision_layer = 2
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+shape = SubResource("RectangleShape2D_wmf85")
+
+[node name="Panel" type="Panel" parent="."]
+custom_minimum_size = Vector2(73.2, 102.4)
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_qx3y6")
