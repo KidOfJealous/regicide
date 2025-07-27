@@ -1,6 +1,6 @@
 class_name Hand extends Node2D
 
-var max_cards = 7
+static var max_cards = 7
 var cards:Array[Card] = []
 
 @onready var HAND_Y = self.get_viewport_rect().size.y-Card.CARD_LENGTH
@@ -9,7 +9,7 @@ var cards:Array[Card] = []
 const card_scene = preload("res://scenes/card.tscn")
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	var cards = $"../Cards"
+	var cards = $"../CardManager"
 	for i in range(max_cards):
 		var c = card_scene.instantiate()
 		cards.add_child(c)

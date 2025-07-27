@@ -3,6 +3,7 @@ signal on_left_click
 signal on_left_release
 
 @onready var deck_reference:Deck = $"../Deck"
+const COLLISION_MASK_DECK = 4
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	pass # Replace with function body.
@@ -25,7 +26,7 @@ func prepare_card()->Card:
 		var mask = cards[0].collider.collision_mask
 		if mask == CardManager.CARD_COLLISION_MASK:
 			var card_found = cards[0].collider.get_parent()
-		elif mask == CardManager.CARD_COLLISION_MASK:
+		elif mask == COLLISION_MASK_DECK:
 			deck_reference.draw_card()
 	return null
 # Called every frame. 'delta' is the elapsed time since the previous frame.

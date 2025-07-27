@@ -35,10 +35,10 @@ func _drag_release():
 	
 func _ready() -> void:
 	screen_size = get_viewport_rect().size # Replace with function body.
-	input_manager.on_left_release.connect(_on_drag_release)
+	input_manager.on_left_release.connect(_on_click_release)
 
-func _on_drag_release():
-	pass
+func _on_click_release():
+	_drag_release()
 
 func connect_card(card:Card)->void:
 	card.hover.connect(_hover)
