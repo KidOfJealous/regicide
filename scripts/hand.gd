@@ -9,12 +9,7 @@ var cards:Array[Card] = []
 const card_scene = preload("res://scenes/card.tscn")
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	var cards = $"../CardManager"
-	for i in range(max_cards):
-		var c = card_scene.instantiate()
-		cards.add_child(c)
-		_add_to_hand(c)
-	update_position()
+	pass
 
 func _add_to_hand(card:Card):
 	cards.push_back(card)
