@@ -25,7 +25,7 @@ collision_mask = 4
 position = Vector2(0, -0.5)
 shape = SubResource("RectangleShape2D_epypp")
 
-[node name="Panel2" type="Panel" parent="."]
+[node name="empty" type="Panel" parent="."]
 visible = false
 custom_minimum_size = Vector2(73.2, 102.4)
 anchors_preset = 15
@@ -35,6 +35,6 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_0hol4")
 
-[node name="Sprite2D" type="Sprite2D" parent="."]
+[node name="card_back" type="Sprite2D" parent="."]
 scale = Vector2(0.1, 0.1)
 texture = ExtResource("2_6rnap")

@@ -9,6 +9,7 @@ func _init_hand_cards()->void:
 	for i in range(4):
 		for j in range(10):
 			var card = Card.init_card_scene(i,j)
+			card.role = CardData.CardPosition.DECK
 			card.position = self.position
 			_cards.push_back(card)
 	_cards.shuffle()
@@ -17,14 +18,19 @@ func _process(delta: float) -> void:
 	pass
 
 func draw_card(num:int=1)->void:
-	if(num>_cards.size()):
-		pass
+	if hand_ref.card_size>=CardData.MAX_HAND_CARD_NUM:
+		return
+	if num>_cards.size():
+		return
 	else:
 		while num>0:
-			var card = _cards.pop_back()
+			var card = _cards.pop_back() as Card
 			card_manager_ref.add_child(card)
 			hand_ref.add_to_hand(card)
+			card.flip()
 			num-=1
-		if _cards.size()==0:
-			$Panel2.visible=true
-			$Sprite2D.visible = false
+	updateStatus()
+func updateStatus():
+	var is_empty =  _cards.size()
+	$empty.visible=!is_empty
+	$card_back.visible = is_empty

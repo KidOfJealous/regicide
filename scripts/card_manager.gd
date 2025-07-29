@@ -11,7 +11,7 @@ func _input(event: InputEvent) -> void:
 		event = event as InputEventMouseButton
 		if event.pressed:
 			var card = prepare_card()
-			if card and card is Card:
+			if card and card is Card and card.role==CardData.CardPosition.HAND:
 				_drag(card)
 		else:
 			_drag_release()

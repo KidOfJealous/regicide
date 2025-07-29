@@ -1,6 +1,6 @@
 class_name Hand extends Node2D
 
-static var max_cards = 7
+
 var cards:Array[Card] = []
 
 @onready var HAND_Y = self.get_viewport_rect().size.y-CardData.CARD_LENGTH
@@ -10,13 +10,14 @@ const card_scene = preload("res://scenes/card.tscn")
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	pass
-
-func _add_to_hand(card:Card):
-	cards.push_back(card)
+var card_size:
+	get:
+		return cards.size()
 func add_to_hand(card:Card):
 	if card not in cards:
-		cards.insert(0,card)
+		cards.push_back(card)
 		update_position()
+		card.role = CardData.CardPosition.HAND
 	else:
 		smooth_move(card,card.hand_position)
 func remove_from_hand(card:Card):

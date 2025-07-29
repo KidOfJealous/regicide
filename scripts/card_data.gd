@@ -25,6 +25,12 @@ enum Joker{
 	LITTE_JOKER,
 	BIG_JOKER,
 }
+enum CardPosition{
+	DECK,
+	HAND,
+	FIELD,
+	DROP,
+}
 const CARD_WIDTH = 73.2
 const CARD_LENGTH = 102.4
 const HOVER_SCALE = Vector2(1.05,1.05)
@@ -37,3 +43,4 @@ const BossValues = [10,15,20]
 const CARD_COLLISION_MASK = 1
 const CARD_SLOT_COLLISION_MASK = 2
 const COLLISION_MASK_DECK = 4
+const MAX_HAND_CARD_NUM = 7

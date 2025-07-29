@@ -4,18 +4,19 @@ const card_scene = preload("res://scenes/card.tscn")
 var value:int
 var suit:CardData.Suit
 var rank:String
+var role:CardData.CardPosition
 var back:bool = false:
 	set(value):
 		back = value
 		$back.visible =back
 		$front.visible = !back
-		
 var hand_position:Vector2
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	self.get_parent().connect_card(self)
 	z_index=1
-
+func flip():
+	($AnimationPlayer as AnimationPlayer).play("flip")
 static func init_card_scene(suit:CardData.Suit=CardData.Suit.SPADE,num:CardData.CardNum=CardData.CardNum.ACE,back:bool = false)->Card:
 	var card:Card = card_scene.instantiate()
 	card.rank =CardData.CardNumNames[num]
