@@ -1,6 +1,5 @@
 class_name CardManager extends Node2D
-static var CARD_COLLISION_MASK = 1
-static var CARD_SLOT_COLLISION_MASK = 2
+
 var card_dragging:Card
 var card_hovering:Card
 var screen_size:Vector2
@@ -18,11 +17,11 @@ func _input(event: InputEvent) -> void:
 			_drag_release()
 func _drag(card:Card):
 	card_dragging = card
-	card.scale=Card.origin_scale
+	card.scale=CardData.ORIGIN_SCALE
 	
 func _drag_release():
 	if card_dragging:
-		card_dragging.scale=Card.hover_scale
+		card_dragging.scale=CardData.HOVER_SCALE
 		var card_slot = prepare_card_slot()
 		if card_slot and not card_slot.card:
 			player_hand.remove_from_hand(card_dragging)
@@ -62,7 +61,7 @@ func prepare_card()->Card:
 	var space_state = get_world_2d().direct_space_state
 	var paras = PhysicsPointQueryParameters2D.new()
 	paras.position = get_global_mouse_position()
-	paras.collision_mask=CARD_COLLISION_MASK
+	paras.collision_mask=CardData.CARD_COLLISION_MASK
 	paras.collide_with_areas = true
 	var cards = space_state.intersect_point(paras)
 	if cards.size()>0:
@@ -73,7 +72,7 @@ func prepare_card_slot()->CardSlot:
 	var space_state = get_world_2d().direct_space_state
 	var paras = PhysicsPointQueryParameters2D.new()
 	paras.position = get_global_mouse_position()
-	paras.collision_mask=CARD_SLOT_COLLISION_MASK
+	paras.collision_mask=CardData.CARD_SLOT_COLLISION_MASK
 	paras.collide_with_areas = true
 	var cards = space_state.intersect_point(paras)
 	if cards.size()>0:

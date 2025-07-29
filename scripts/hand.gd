@@ -3,7 +3,7 @@ class_name Hand extends Node2D
 static var max_cards = 7
 var cards:Array[Card] = []
 
-@onready var HAND_Y = self.get_viewport_rect().size.y-Card.CARD_LENGTH
+@onready var HAND_Y = self.get_viewport_rect().size.y-CardData.CARD_LENGTH
 @onready var screen_center_x = self.get_viewport_rect().size.x/2
 
 const card_scene = preload("res://scenes/card.tscn")
@@ -32,8 +32,8 @@ func update_position()->void:
 		
 		
 func calc_pos(i:int,size:int):
-	var total_width = (size-1)*Card.CARD_WIDTH
-	var x_offset = screen_center_x+i*Card.CARD_WIDTH-total_width/2
+	var total_width = (size-1)*CardData.CARD_WIDTH
+	var x_offset = screen_center_x+i*CardData.CARD_WIDTH-total_width/2
 	return x_offset
 	
 func smooth_move(card:Card,position:Vector2):

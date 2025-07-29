@@ -6,10 +6,12 @@ func _ready() -> void:
 @onready var hand_ref:Hand=$"../Hand"
 @onready var card_manager_ref:CardManager=$"../CardManager"
 func _init_hand_cards()->void:
-	for i in range(Hand.max_cards):
-		var card = Card.init_card_scene()
-		card.position = self.position
-		_cards.push_back(card)
+	for i in range(4):
+		for j in range(10):
+			var card = Card.init_card_scene(i,j)
+			card.position = self.position
+			_cards.push_back(card)
+	_cards.shuffle()
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
 	pass
