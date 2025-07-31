@@ -15,9 +15,16 @@ position = Vector2(566, 590)
 script = ExtResource("3_j7wrs")
 
 [node name="Deck" parent="." instance=ExtResource("4_fws66")]
-position = Vector2(998, 446)
+position = Vector2(970, 490)
 
 [node name="CardSlot" parent="." instance=ExtResource("2_04qyp")]
 position = Vector2(267, 305)
 
 [node name="InputManager" parent="." instance=ExtResource("5_04qyp")]
+
+[node name="Button" type="Button" parent="."]
+offset_left = 500.0
+offset_top = 300.0
+offset_right = 560.0
+offset_bottom = 331.0
+text = "确认"
