@@ -20,17 +20,19 @@ func _process(delta: float) -> void:
 func draw_card(num:int=1)->void:
 	if hand_ref.card_size>=CardData.MAX_HAND_CARD_NUM:
 		return
-	if num>_cards.size():
-		return
 	else:
-		while num>0:
+		while num>0 and not _cards.is_empty():
 			var card = _cards.pop_back() as Card
 			card_manager_ref.add_child(card)
 			hand_ref.add_to_hand(card)
 			card.flip()
 			num-=1
 	updateStatus()
+func put_boss_top(card:Card)->void:
+	_cards.push_back(card)
+	updateStatus()
+func put_cards_back(cards:Array[Card])->void:
+	_cards=cards+_cards
 func updateStatus():
-	var is_empty =  _cards.size()
-	$empty.visible=!is_empty
-	$card_back.visible = is_empty
+	$empty.visible=_cards.is_empty()
+	$card_back.visible = !_cards.is_empty()

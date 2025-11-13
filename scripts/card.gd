@@ -1,6 +1,11 @@
 class_name Card extends Node2D
 signal hover
 const card_scene = preload("res://scenes/card.tscn")
+var hovered:bool
+var selected:bool:
+	set(value):
+		selected = value
+
 var value:int
 var suit:CardData.Suit
 var rank:String
@@ -17,29 +22,30 @@ func _ready() -> void:
 	z_index=1
 func flip():
 	($AnimationPlayer as AnimationPlayer).play("flip")
-static func init_card_scene(suit:CardData.Suit=CardData.Suit.SPADE,num:CardData.CardNum=CardData.CardNum.ACE,back:bool = false)->Card:
+static func init_card_scene(s:CardData.Suit=CardData.Suit.SPADE,num:CardData.CardNum=CardData.CardNum.ACE,b:bool = false)->Card:
 	var card:Card = card_scene.instantiate()
 	card.rank =CardData.CardNumNames[num]
-	card.suit =suit
+	card.suit =s
 	card.value = num+1
-	card.back = back
-	var image_path = str("res://images/"+CardData.SuitNames[suit]+"_"+card.rank+".png")
+	card.back = b
+	var image_path = str("res://images/"+CardData.SuitNames[s]+"_"+card.rank+".png")
 	print(image_path)
 	(card.get_node("front") as Sprite2D).texture = load(image_path)
 	return card
-static func init_boss_scene(suit:CardData.Suit=CardData.Suit.SPADE,num:CardData.Boss=CardData.Boss.JACK,back = false)->Card:
+
+static func init_boss_scene(s:CardData.Suit=CardData.Suit.SPADE,num:CardData.Boss=CardData.Boss.JACK,b = false)->Card:
 	var card:Card = card_scene.instantiate()
 	card.rank = CardData.BossNames[num]
-	card.suit =suit
+	card.suit =s
 	card.value = CardData.BossValues[num]
-	(card.get_node("front") as Sprite2D).texture = load(str("res://images/"+CardData.SuitNames[suit]+card.rank+".png"))
-	card.back = back
+	(card.get_node("front") as Sprite2D).texture = load(str("res://images/"+CardData.SuitNames[s]+card.rank+".png"))
+	card.back = b
 	return card
+
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 @warning_ignore("unused_parameter")
 func _process(delta: float) -> void:
 	pass
-
 
 func _on_area_2d_mouse_entered() -> void:
 	self.hover.emit(self,true)
@@ -51,6 +57,5 @@ func set_hover(b:bool):
 	else:
 		self.scale = CardData.ORIGIN_SCALE
 		self.z_index=1
-
 func _on_area_2d_mouse_exited() -> void:
 	self.hover.emit(self,false)

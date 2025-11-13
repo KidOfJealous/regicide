@@ -4,6 +4,7 @@ class_name Hand extends Node2D
 var cards:Array[Card] = []
 
 @onready var HAND_Y = self.get_viewport_rect().size.y-CardData.CARD_LENGTH
+@onready var SELECTED_Y = HAND_Y - CardData.CARD_LENGTH/5
 @onready var screen_center_x = self.get_viewport_rect().size.x/2
 
 const card_scene = preload("res://scenes/card.tscn")
@@ -27,19 +28,25 @@ func remove_from_hand(card:Card):
 func update_position()->void:
 	var size = cards.size()
 	for i in range(size):
-		var pos = Vector2(calc_pos(i,size),HAND_Y)
+		var pos = Vector2(calc_pos(i,size),HAND_Y if not cards[i].selected else SELECTED_Y)
 		cards[i].hand_position = pos;
 		smooth_move(cards[i],pos)
-		
-		
+
+func select_card(card:Card)->void:
+	card.selected = not card.selected
+	update_position()
+
 func calc_pos(i:int,size:int):
 	var total_width = (size-1)*CardData.CARD_WIDTH
 	var x_offset = screen_center_x+i*CardData.CARD_WIDTH-total_width/2
 	return x_offset
 	
-func smooth_move(card:Card,position:Vector2):
+func smooth_move(card:Card,pos:Vector2):
 	var tween = get_tree().create_tween()
-	tween.tween_property(card,"position",position,0.1)
+	tween.tween_property(card,"position",pos,0.1)
+
+func get_selected()->Array[Card]:
+	return cards.filter(func(card:Card): return card.selected)
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
 	pass

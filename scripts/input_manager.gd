@@ -2,6 +2,7 @@ class_name InputManager extends Node2D
 signal on_left_click
 signal on_left_release
 
+@onready var end_turn_button_ref:EndTurnButton = $"../Button"
 @onready var deck_reference:Deck = $"../Deck"
 
 # Called when the node enters the scene tree for the first time.
@@ -29,6 +30,8 @@ func prepare_card()->Card:
 		elif mask == CardData.COLLISION_MASK_DECK:
 			deck_reference.draw_card()
 	return null
+
+	
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
 	pass

@@ -29,7 +29,7 @@ enum CardPosition{
 	DECK,
 	HAND,
 	FIELD,
-	DROP,
+	DISCARD,
 }
 const CARD_WIDTH = 73.2
 const CARD_LENGTH = 102.4

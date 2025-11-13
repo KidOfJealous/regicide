@@ -1,10 +1,11 @@
-[gd_scene load_steps=6 format=3 uid="uid://crtljsp61enxk"]
+[gd_scene load_steps=7 format=3 uid="uid://crtljsp61enxk"]
 
 [ext_resource type="PackedScene" uid="uid://oyagdtserp0a" path="res://scenes/card_manager.tscn" id="1_04qyp"]
 [ext_resource type="PackedScene" uid="uid://cm2fnm3ujcipn" path="res://scenes/card_slot.tscn" id="2_04qyp"]
 [ext_resource type="Script" uid="uid://xabqc7tbpja7" path="res://scripts/hand.gd" id="3_j7wrs"]
 [ext_resource type="PackedScene" uid="uid://demeq3rjvd3dl" path="res://scenes/deck.tscn" id="4_fws66"]
 [ext_resource type="PackedScene" uid="uid://cp3tamwsy2imc" path="res://scenes/input_manager.tscn" id="5_04qyp"]
+[ext_resource type="Script" uid="uid://166pv80tmgmd" path="res://scripts/button.gd" id="6_j7wrs"]
 
 [node name="Main" type="Node2D"]
 
@@ -28,3 +29,4 @@ offset_top = 300.0
 offset_right = 560.0
 offset_bottom = 331.0
 text = "确认"
+script = ExtResource("6_j7wrs")
