@@ -21,12 +21,13 @@ func draw_card(num:int=1)->void:
 	if hand_ref.card_size>=CardData.MAX_HAND_CARD_NUM:
 		return
 	else:
-		while num>0 and not _cards.is_empty():
+		while num>0 and hand_ref.card_size<CardData.MAX_HAND_CARD_NUM and not _cards.is_empty():
 			var card = _cards.pop_back() as Card
 			card_manager_ref.add_child(card)
 			hand_ref.add_to_hand(card)
 			card.flip()
 			num-=1
+			await  get_tree().create_timer(0.2).timeout
 	updateStatus()
 func put_boss_top(card:Card)->void:
 	_cards.push_back(card)

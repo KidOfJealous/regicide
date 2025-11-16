@@ -1,49 +1,7 @@
-[gd_scene load_steps=11 format=3 uid="uid://crtljsp61enxk"]
+[gd_scene load_steps=2 format=3 uid="uid://crtljsp61enxk"]
 
-[ext_resource type="PackedScene" uid="uid://oyagdtserp0a" path="res://scenes/card_manager.tscn" id="1_04qyp"]
-[ext_resource type="PackedScene" uid="uid://cm2fnm3ujcipn" path="res://scenes/card_slot.tscn" id="2_04qyp"]
-[ext_resource type="Script" uid="uid://xabqc7tbpja7" path="res://scripts/hand.gd" id="3_j7wrs"]
-[ext_resource type="PackedScene" uid="uid://demeq3rjvd3dl" path="res://scenes/deck.tscn" id="4_fws66"]
-[ext_resource type="PackedScene" uid="uid://cp3tamwsy2imc" path="res://scenes/input_manager.tscn" id="5_04qyp"]
-[ext_resource type="Script" uid="uid://166pv80tmgmd" path="res://scripts/button.gd" id="6_j7wrs"]
-[ext_resource type="Script" uid="uid://bab44agpw06tc" path="res://scripts/boss_deck.gd" id="7_dubn7"]
-[ext_resource type="Script" uid="uid://boq3c6oe28gm5" path="res://scripts/play_ground.gd" id="8_08kqv"]
-[ext_resource type="Script" uid="uid://ddmv8aexmgafw" path="res://scripts/discard.gd" id="9_f6ptj"]
-[ext_resource type="Script" uid="uid://c57jdkgt44jub" path="res://scripts/card_field.gd" id="10_hsdmi"]
+[ext_resource type="PackedScene" uid="uid://dehlqbcjxuxjj" path="res://scenes/game_scene.tscn" id="1_6e84v"]
 
 [node name="Main" type="Node2D"]
 
-[node name="CardManager" parent="." instance=ExtResource("1_04qyp")]
-
-[node name="Hand" type="Node2D" parent="."]
-position = Vector2(566, 590)
-script = ExtResource("3_j7wrs")
-
-[node name="Deck" parent="." instance=ExtResource("4_fws66")]
-position = Vector2(970, 490)
-
-[node name="CardSlot" parent="." instance=ExtResource("2_04qyp")]
-position = Vector2(562, 299)
-
-[node name="InputManager" parent="." instance=ExtResource("5_04qyp")]
-
-[node name="Button" type="Button" parent="."]
-offset_left = 537.0
-offset_top = 366.0
-offset_right = 597.0
-offset_bottom = 397.0
-text = "确认"
-script = ExtResource("6_j7wrs")
-
-[node name="BossDeck" parent="." instance=ExtResource("4_fws66")]
-position = Vector2(1940, 980)
-script = ExtResource("7_dubn7")
-
-[node name="PlayGround" type="Node2D" parent="."]
-script = ExtResource("8_08kqv")
-
-[node name="Discard" type="Node2D" parent="."]
-script = ExtResource("9_f6ptj")
-
-[node name="CardField" type="Node2D" parent="."]
-script = ExtResource("10_hsdmi")
+[node name="GameScene" parent="." instance=ExtResource("1_6e84v")]

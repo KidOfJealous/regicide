@@ -1,0 +1,44 @@
+[gd_scene load_steps=11 format=3 uid="uid://dehlqbcjxuxjj"]
+
+[ext_resource type="PackedScene" uid="uid://oyagdtserp0a" path="res://scenes/card_manager.tscn" id="1_mw25s"]
+[ext_resource type="PackedScene" uid="uid://demeq3rjvd3dl" path="res://scenes/deck.tscn" id="2_tcjrq"]
+[ext_resource type="PackedScene" uid="uid://cp3tamwsy2imc" path="res://scenes/input_manager.tscn" id="3_rvs2r"]
+[ext_resource type="Script" uid="uid://boq3c6oe28gm5" path="res://scripts/play_ground.gd" id="4_tqxxy"]
+[ext_resource type="PackedScene" uid="uid://cmrgx73rd1ea6" path="res://scenes/discard.tscn" id="5_5ay1a"]
+[ext_resource type="PackedScene" uid="uid://fej8vrehdfj3" path="res://scenes/card_field.tscn" id="6_ldkr4"]
+[ext_resource type="Texture2D" uid="uid://dc0l1vh17wtu1" path="res://images/图片底纹.png" id="7_liy57"]
+[ext_resource type="PackedScene" uid="uid://ks2atlur88y4" path="res://scenes/boss_deck.tscn" id="8_mwyo0"]
+[ext_resource type="Script" uid="uid://dx5vrod8amtcp" path="res://scripts/players.gd" id="9_mw25s"]
+[ext_resource type="PackedScene" uid="uid://bqxkcu7y62r10" path="res://scenes/player.tscn" id="9_s76x2"]
+
+[node name="GameScene" type="Node2D"]
+
+[node name="CardManager" parent="." instance=ExtResource("1_mw25s")]
+
+[node name="Deck" parent="." instance=ExtResource("2_tcjrq")]
+position = Vector2(970, 490)
+
+[node name="InputManager" parent="." instance=ExtResource("3_rvs2r")]
+
+[node name="PlayGround" type="Node2D" parent="."]
+script = ExtResource("4_tqxxy")
+
+[node name="Discard" parent="." instance=ExtResource("5_5ay1a")]
+position = Vector2(571, 297)
+
+[node name="CardField" parent="." instance=ExtResource("6_ldkr4")]
+position = Vector2(641, 182)
+
+[node name="BackGround" type="Sprite2D" parent="."]
+z_index = -4
+position = Vector2(578, 324)
+scale = Vector2(1.99, 1.12)
+texture = ExtResource("7_liy57")
+
+[node name="BossDeck" parent="." instance=ExtResource("8_mwyo0")]
+position = Vector2(561, 177)
+
+[node name="Players" type="Node2D" parent="."]
+script = ExtResource("9_mw25s")
+
+[node name="Player" parent="Players" instance=ExtResource("9_s76x2")]

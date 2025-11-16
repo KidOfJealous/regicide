@@ -1,4 +1,5 @@
-class_name Discard extends CardField
+class_name Discard extends Node2D
+var cards:Array[Card] = []
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	pass
@@ -17,3 +18,5 @@ func getCards(num:int = 1)->Array[Card]:
 func fresh_pos()->void:
 	for card in cards:
 		card.role=CardData.CardPosition.DISCARD
+		card.position=self.position
+		CardData.smooth_move(card,self.position)

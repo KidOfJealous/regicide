@@ -1,0 +1,25 @@
+[gd_scene load_steps=3 format=3 uid="uid://ks2atlur88y4"]
+
+[ext_resource type="PackedScene" uid="uid://demeq3rjvd3dl" path="res://scenes/deck.tscn" id="1_pk24y"]
+[ext_resource type="Script" uid="uid://bab44agpw06tc" path="res://scripts/boss_deck.gd" id="2_6805n"]
+
+[node name="BossDeck" instance=ExtResource("1_pk24y")]
+script = ExtResource("2_6805n")
+
+[node name="Area2D" parent="." index="0"]
+collision_layer = 16
+collision_mask = 16
+
+[node name="Health" type="Label" parent="." index="3"]
+offset_left = 54.0
+offset_top = -36.0
+offset_right = 94.0
+offset_bottom = -13.0
+text = "生命值："
+
+[node name="Attack" type="Label" parent="." index="4"]
+offset_left = 54.0
+offset_top = 13.0
+offset_right = 118.0
+offset_bottom = 36.0
+text = "攻击力："

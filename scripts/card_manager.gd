@@ -1,13 +1,13 @@
 class_name CardManager extends Node2D
 
 # var card_dragging:Card
-var card_hovering:Card
-var screen_size:Vector2
-@onready var player_hand:Hand = $"../Hand"
-@onready var input_manager:InputManager = $"../InputManager"
+var card_hovering: Card
+var screen_size: Vector2
+@onready var player_hand: Hand = $"../Hand"
+@onready var input_manager: InputManager = $"../InputManager"
 # Called when the node enters the scene tree for the first time.
 func _input(event: InputEvent) -> void:
-	if event is InputEventMouseButton and event.button_index==MOUSE_BUTTON_LEFT:
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
 		event = event as InputEventMouseButton
 		if not event.pressed:
 			var card = prepare_card()
@@ -15,10 +15,10 @@ func _input(event: InputEvent) -> void:
 				_drag(card)
 		# else:
 		# 	_addToHand()
-func _drag(card:Card):
-	if card.role==CardData.CardPosition.HAND:
+func _drag(card: Card):
+	if card.role == CardData.CardPosition.HAND:
 		player_hand.select_card(card)
-	elif card.role==CardData.CardPosition.DECK:
+	elif card.role == CardData.CardPosition.DECK:
 		player_hand.add_to_hand(card)
 func _ready() -> void:
 	screen_size = get_viewport_rect().size # Replace with function body.
@@ -28,32 +28,31 @@ func _on_click_release():
 	# _addToHand()
 	pass
 
-func connect_card(card:Card)->void:
+func connect_card(card: Card) -> void:
 	card.hover.connect(_hover)
-	
 
-func _hover(card:Card,hover:bool)->void:
+func _hover(card: Card, hover: bool) -> void:
 	if hover:
 		if !card_hovering:
 			card_hovering = card
-			card.set_hover(true)
+			card.hovered = true
 	else:
-		card.set_hover(false)
+		card.hovered = false
 		var new_card = prepare_card()
 		if new_card:
 			card_hovering = new_card
-			new_card.set_hover(true)
+			new_card.hovered = true
 		else:
 			card_hovering = null
 				
-func prepare_card()->Card:
+func prepare_card() -> Card:
 	var space_state = get_world_2d().direct_space_state
 	var paras = PhysicsPointQueryParameters2D.new()
 	paras.position = get_global_mouse_position()
-	paras.collision_mask=CardData.CARD_COLLISION_MASK
+	paras.collision_mask = CardData.CARD_COLLISION_MASK
 	paras.collide_with_areas = true
 	var cards = space_state.intersect_point(paras)
-	if cards.size()>0:
+	if cards.size() > 0:
 		return _get_highest(cards)
 	return null
 	
@@ -68,7 +67,7 @@ func prepare_card()->Card:
 # 		return cards[0].collider.get_parent()
 # 	return null
 	
-func _get_highest(cards)->Card:
+func _get_highest(cards) -> Card:
 	var res = null
 	for c in cards:
 		var card = c.collider.get_parent() as Card
@@ -77,7 +76,6 @@ func _get_highest(cards)->Card:
 	return res
 	
 	
-
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
 	pass

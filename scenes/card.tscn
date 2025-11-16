@@ -125,6 +125,14 @@ z_index = -1
 scale = Vector2(0.1, 0.1)
 texture = ExtResource("2_ktuci")
 
+[node name="ColorRect" type="ColorRect" parent="front"]
+visible = false
+offset_left = -366.0
+offset_top = -512.0
+offset_right = 366.0
+offset_bottom = 512.0
+color = Color(0.13333334, 0.13333334, 0.13333334, 0.5019608)
+
 [node name="Area2D" type="Area2D" parent="."]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
@@ -132,6 +140,7 @@ position = Vector2(0, -0.25)
 shape = SubResource("RectangleShape2D_y7nya")
 
 [node name="back" type="Sprite2D" parent="."]
+visible = false
 scale = Vector2(0.1, 0.1)
 texture = ExtResource("3_ktuci")
 

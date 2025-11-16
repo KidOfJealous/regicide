@@ -1,5 +1,8 @@
 class_name CardField extends Node2D
-var cards:Array[Card] = []
-func fresh_pos()->void:
+var cards: Array[Card] = []
+func fresh_pos() -> void:
 	for card in cards:
-		card.role=CardData.CardPosition.FIELD
+		card.role = CardData.CardPosition.FIELD
+		card.position = self.position
+		card.disabled = false
+		CardData.smooth_move(card,self.position)
