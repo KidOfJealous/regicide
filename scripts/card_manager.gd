@@ -1,10 +1,13 @@
 class_name CardManager extends Node2D
 
+# 导入Player类以解决"Could not find type Player"错误
+const Player = preload("res://scripts/player.gd")
+
 # var card_dragging:Card
 var card_hovering: Card
 var screen_size: Vector2
-@onready var player_hand: Hand = $"../Hand"
-@onready var input_manager: InputManager = $"../InputManager"
+@export var player_path: NodePath = "../Players/Player"
+@onready var player: Player = get_node(player_path)
 # Called when the node enters the scene tree for the first time.
 func _input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
@@ -17,16 +20,12 @@ func _input(event: InputEvent) -> void:
 		# 	_addToHand()
 func _drag(card: Card):
 	if card.role == CardData.CardPosition.HAND:
-		player_hand.select_card(card)
+		player.select_card(card)
 	elif card.role == CardData.CardPosition.DECK:
-		player_hand.add_to_hand(card)
+		player.add_card_to_hand(card)
 func _ready() -> void:
 	screen_size = get_viewport_rect().size # Replace with function body.
-	input_manager.on_left_release.connect(_on_click_release)
-
-func _on_click_release():
-	# _addToHand()
-	pass
+	assert(player != null, "Player reference is null! Check player_path in inspector.")
 
 func connect_card(card: Card) -> void:
 	card.hover.connect(_hover)

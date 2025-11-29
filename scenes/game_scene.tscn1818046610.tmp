@@ -24,10 +24,10 @@ position = Vector2(970, 490)
 script = ExtResource("4_tqxxy")
 
 [node name="Discard" parent="." instance=ExtResource("5_5ay1a")]
-position = Vector2(289.82123, 259.15897)
+position = Vector2(571, 297)
 
 [node name="CardField" parent="." instance=ExtResource("6_ldkr4")]
-position = Vector2(458.6965, 176.86853)
+position = Vector2(641, 182)
 
 [node name="BackGround" type="Sprite2D" parent="."]
 z_index = -4

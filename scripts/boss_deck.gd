@@ -1,5 +1,6 @@
 class_name BossDeck extends Node2D
 var _cards: Array[Card] = []
+var current_boss: Card = null
 var current_boss_health: int
 var current_boss_attack: int:
 	set(value):
@@ -11,7 +12,6 @@ const health_template = "生命值：{0}/{1}"
 const attack_template = "攻击力：{0}/{1}"
 func _ready() -> void:
 	_init_boss_cards() # Replace with function body.
-@onready var hand_ref: Hand = $"../Hand"
 @onready var card_manager_ref: CardManager = $"../CardManager"
 func _init_boss_cards() -> void:
 	for i in range(2, -1, -1):
@@ -21,25 +21,23 @@ func _init_boss_cards() -> void:
 			card.role = CardData.CardPosition.BOSS
 			card.position = self.position
 			_temp.push_back(card)
+		_temp.shuffle()
 		_cards += _temp
 	draw_card()
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
 	pass
 func refresh_status() -> void:
-	var attack = current_boss().value
+	var attack = current_boss.value
 	health_text.text=health_template.format([self.current_boss_health,attack*2])
 	attach_text.text=attack_template.format([self.current_boss_attack,attack])
 	
 func draw_card() -> void:
 	if _cards.is_empty():
 		return
-	var card = _cards[-1] as Card
-	current_boss_health = card.value * 2
-	current_boss_attack = card.value
-	card.flip()
-	card_manager_ref.add_child(card)
+	current_boss = _cards.pop_back() as Card
+	current_boss_health = current_boss.value * 2
+	current_boss_attack = current_boss.value
+	current_boss.flip()
+	card_manager_ref.add_child(current_boss)
 	refresh_status()
-	
-func current_boss() -> Card:
-	return _cards[-1]

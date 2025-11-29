@@ -60,7 +60,8 @@ func _process(delta: float) -> void:
 	pass
 
 func _on_area_2d_mouse_entered() -> void:
-	self.hover.emit(self, true)
+	if self.role==CardData.CardPosition.HAND:
+		self.hover.emit(self, true)
 
 func _on_area_2d_mouse_exited() -> void:
 	self.hover.emit(self, false)
