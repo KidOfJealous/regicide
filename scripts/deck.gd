@@ -62,6 +62,10 @@ func updateStatus():
 	$empty.visible=_cards.is_empty()
 	$card_back.visible = !_cards.is_empty()
 	
-	# 更新计数显示
+	# 更新计数显示，没有卡牌时不显示
 	if count_label:
-		count_label.text = str(_cards.size())
+		if _cards.size() > 0:
+			count_label.text = str(_cards.size())
+			count_label.show()
+		else:
+			count_label.hide()

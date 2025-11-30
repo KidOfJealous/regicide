@@ -31,9 +31,14 @@ func take_turns()->void:
 
 func player_play():
 	station = CardData.TurnStation.PLAYER
+	# 检查玩家是否还有手牌，如果没有则判负
+	if player.get_hand_card_count() == 0:
+		lose()
+		return
 	var selected =  await player.wait_for_play()
 	player.remove_selected_cards()
 	await card_effect(selected)
+	
 func _start():
 	boss_dec.draw_card()
 	deck.draw_card(CardData.MAX_HAND_CARD_NUM, player)
@@ -41,7 +46,7 @@ func _start():
 		await take_turns()
 
 func card_effect(cards: Array[Card]) -> void:
-	var boss = boss_dec.get_current_boss()  # 修正：调用get_current_boss函数
+	var boss = boss_dec.current_boss
 	var value = 0
 	var suits: Array[int] = [false, false, false, false]
 	for card in cards:
@@ -64,12 +69,14 @@ func card_effect(cards: Array[Card]) -> void:
 		boss_to_deck(boss, boss_dec.current_boss_health == 0)
 		add_to_discard(field.cards)
 		field.cards = []
+		field.fresh_pos()
 		if boss_dec._cards.size() > 0:  # 还有Boss牌
 			boss_dec.draw_card()  # 抽取下一个Boss
 		else:
 			win()
 	else:
 		await boss_attack()
+		
 func add_to_discard(cards: Array[Card]):
 	discard.cards += cards
 	discard.fresh_pos()
@@ -90,11 +97,36 @@ func boss_attack() -> void:
 func win():
 	end = true
 	print("You win")
+	# 显示胜利界面
+	show_game_over(true)
+
 func lose():
 	end = true
 	print("You lose")
+	# 显示失败界面
+	show_game_over(false)
+
+func show_game_over(is_win: bool) -> void:
+	# 加载并显示游戏结束界面
+	var game_over_scene = preload("res://scenes/game_over.tscn")
+	var game_over = game_over_scene.instantiate()
+	add_child(game_over)
+	
+	if is_win:
+		game_over.show_win()
+	else:
+		game_over.show_lose()
+		
+	# 连接重新开始游戏的信号
+	game_over.connect("restart_game", Callable(self, "_restart_game"))
+
+func _restart_game() -> void:
+	# 重新开始游戏的逻辑
+	get_tree().change_scene_to_file("res://scenes/game_scene.tscn")
+
 func _restore_deck(num: int):
 	deck.put_cards_back(discard.getCards(num))
+	
 func boss_to_deck(boss: Card, mercy: bool = false):
 	if mercy:
 		deck.put_boss_top(boss)

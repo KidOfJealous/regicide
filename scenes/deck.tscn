@@ -1,4 +1,4 @@
-[gd_scene load_steps=6 format=3 uid="uid://demeq3rjvd3dl"]
+[gd_scene load_steps=5 format=3 uid="uid://demeq3rjvd3dl"]
 
 [ext_resource type="Script" uid="uid://devi1px4pcpq7" path="res://scripts/deck.gd" id="1_sdhao"]
 [ext_resource type="Texture2D" uid="uid://be2lh6p6k61l" path="res://images/0 - Unnamed (Back).png" id="2_6rnap"]
@@ -47,5 +47,4 @@ offset_left = -30.0
 offset_top = -60.0
 offset_right = 30.0
 offset_bottom = -40.0
-text = "0"
-horizontal_alignment = 1  # CENTER
+horizontal_alignment = 1

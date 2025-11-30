@@ -5,7 +5,7 @@ var cards: Array[Card] = []
 
 func fresh_pos() -> void:
 	# 计算层叠偏移量，每张牌露出一部分
-	var overlap_offset = CardData.CARD_LENGTH * 0.3  # 30%的重叠
+	var overlap_offset = CardData.CARD_LENGTH * CardData.CARD_OVERLAP_RATIO  # 使用常量
 	
 	for i in range(cards.size()):
 		var card = cards[i]
@@ -21,6 +21,10 @@ func fresh_pos() -> void:
 	update_count()
 
 func update_count():
-	# 更新计数显示
+	# 更新计数显示，没有卡牌时不显示
 	if count_label:
-		count_label.text = str(cards.size())
+		if cards.size() > 0:
+			count_label.text = str(cards.size())
+			count_label.show()
+		else:
+			count_label.hide()
