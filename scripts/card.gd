@@ -2,22 +2,42 @@ class_name Card extends Node2D
 signal hover
 const card_scene = preload("res://scenes/card.tscn")
 @onready var front_mask: ColorRect = $"front/ColorRect"
+@onready var animation_player: AnimationPlayer = $"AnimationPlayer"
+
+# 悬停状态
 var hovered: bool:
 	set(b):
 		hovered = b
 		if b:
-			self.scale = CardData.HOVER_SCALE
+			_animate_scale(CardData.HOVER_SCALE)
 			self.z_index = 2
 		else:
-			self.scale = CardData.ORIGIN_SCALE
+			_animate_scale(CardData.ORIGIN_SCALE)
 			self.z_index = 1
+
+# 选中状态
 var selected: bool:
 	set(value):
-		selected = value
+		if selected != value:
+			selected = value
+			if selected:
+				_animate_scale(Vector2(1.1, 1.1))
+				self.z_index = 3
+			else:
+				_animate_scale(CardData.ORIGIN_SCALE)
+				self.z_index = 1
+
+# 禁用状态
 var disabled: bool:
 	set(value):
 		disabled = value
 		front_mask.visible = disabled
+		# 禁用时添加灰暗效果
+		if disabled:
+			self.modulate = Color(0.6, 0.6, 0.6, 1.0)
+		else:
+			self.modulate = Color(1.0, 1.0, 1.0, 1.0)
+
 var value: int
 var suit: CardData.Suit
 var rank: String
@@ -32,12 +52,37 @@ var back: bool = false:
 		$back.visible = back
 		$front.visible = !back
 var hand_position: Vector2
+
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	self.get_parent().connect_card(self)
 	z_index = 1
+
+# 翻牌动画
 func flip():
-	($AnimationPlayer as AnimationPlayer).play("flip")
+	animation_player.play("flip")
+
+# 平滑缩放动画
+func _animate_scale(target_scale: Vector2) -> void:
+	var tween = create_tween()
+	tween.tween_property(self, "scale", target_scale, 0.15).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
+
+# 平滑移动动画（外部调用）
+func animate_move_to(target_pos: Vector2, duration: float = 0.2) -> void:
+	var tween = create_tween()
+	tween.tween_property(self, "position", target_pos, duration).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_QUAD)
+
+# 出牌动画（向上飞出）
+func animate_play() -> void:
+	var tween = create_tween()
+	tween.tween_property(self, "scale", Vector2(0.8, 0.8), 0.1)
+	tween.tween_property(self, "modulate", Color(1, 1, 1, 0.5), 0.2)
+
+# 被击败动画（Boss牌）
+func animate_defeated() -> void:
+	var tween = create_tween()
+	tween.tween_property(self, "scale", Vector2(0.01, 0.01), 0.3).set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_QUAD)
+	tween.tween_callback(func(): queue_free())
 static func init_card_scene(s: CardData.Suit = CardData.Suit.SPADE, num: CardData.CardNum = CardData.CardNum.ACE, b: bool = false) -> Card:
 	var card: Card = card_scene.instantiate()
 	card.rank = CardData.CardNumNames[num]

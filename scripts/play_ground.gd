@@ -52,6 +52,7 @@ func _input(event: InputEvent) -> void:
 			do_mulligan()
 			mulligan_used = true
 			mulligan_available = false
+			player._update_status_label()  # 恢复正常状态提示
 
 func _process(delta):
 	# 在_process中检查是否所有依赖都已准备好
@@ -116,8 +117,13 @@ func multiplayer_player_play():
 
 # 等待回合切换
 func _wait_for_turn_change() -> void:
+	var timeout = 60.0  # 60秒超时
 	while not is_my_turn and not end:
 		await get_tree().create_timer(0.1).timeout
+		timeout -= 0.1
+		if timeout <= 0:
+			push_error("等待回合超时，网络连接可能已断开")
+			return
 
 # 切换到下一个玩家
 func _next_player() -> void:
@@ -288,7 +294,9 @@ func rpc_receive_hand(cards_data: Array) -> void:
 		var card = _deserialize_card(card_data)
 		if card:
 			cards.append(card)
+			card_manager_ref.add_child(card)  # 添加到场景
 			player.hand.add_to_hand(card)
+			card.flip()  # 显示卡牌正面
 	player_hand_counts[my_peer_id] = cards.size()
 	player.hand.update_position()
 
@@ -352,6 +360,9 @@ func card_effect(cards: Array[Card]) -> void:
 		await boss_attack()
 		return
 	
+	# 播放出牌音效
+	AudioManager.play_card_play()
+	
 	# 检查是否打出Joker牌
 	var joker_played = false
 	for card in cards:
@@ -361,6 +372,8 @@ func card_effect(cards: Array[Card]) -> void:
 	
 	# Joker特殊处理：取消Boss免疫，跳过攻击回合
 	if joker_played:
+		# 播放Joker音效
+		AudioManager.play_joker()
 		boss_dec.immune_cancelled = true
 		boss_dec.refresh_status()
 		add_to_discard(cards)
@@ -386,16 +399,20 @@ func card_effect(cards: Array[Card]) -> void:
 	# 梅花：伤害翻倍
 	if suits_played[CardData.Suit.CLUB]:
 		if immune_cancelled or boss.suit != CardData.Suit.CLUB:
+			AudioManager.play_suit_effect(CardData.Suit.CLUB)  # 播放梅花效果音效
 			damage *= 2
 	
 	# 红心：恢复牌堆
 	if suits_played[CardData.Suit.HEART]:
 		if immune_cancelled or boss.suit != CardData.Suit.HEART:
+			AudioManager.play_suit_effect(CardData.Suit.HEART)  # 播放红心效果音效
 			_restore_deck(value)
 	
 	# 方块：抽牌
 	if suits_played[CardData.Suit.DIAMOND]:
 		if immune_cancelled or boss.suit != CardData.Suit.DIAMOND:
+			AudioManager.play_suit_effect(CardData.Suit.DIAMOND)  # 播放方块效果音效
+			AudioManager.play_card_draw()  # 播放抽牌音效
 			deck.draw_card(value, player, hand_size_limit)
 			# 多人模式下同步抽牌结果
 			if is_multiplayer and network_mgr and network_mgr.is_host:
@@ -405,6 +422,7 @@ func card_effect(cards: Array[Card]) -> void:
 	# 黑桃：降低Boss攻击力
 	if suits_played[CardData.Suit.SPADE]:
 		if immune_cancelled or boss.suit != CardData.Suit.SPADE:
+			AudioManager.play_suit_effect(CardData.Suit.SPADE)  # 播放黑桃效果音效
 			boss_dec.current_boss_attack -= value
 	add_to_field(cards)
 	boss_dec.current_boss_health -= damage
@@ -415,6 +433,7 @@ func card_effect(cards: Array[Card]) -> void:
 		field.cards = []
 		field.fresh_pos()
 		if boss_dec._cards.size() > 0:  # 还有Boss牌
+			AudioManager.play_boss_spawn()  # 播放新Boss出现音效
 			boss_dec.draw_card()  # 抽取下一个Boss
 		else:
 			win()
@@ -520,12 +539,16 @@ func _check_all_players_empty() -> bool:
 func win():
 	end = true
 	print("You win")
+	# 播放胜利音效
+	AudioManager.play_win()
 	# 显示胜利界面
 	show_game_over(true)
 
 func lose():
 	end = true
 	print("You lose")
+	# 播放失败音效
+	AudioManager.play_lose()
 	# 显示失败界面
 	show_game_over(false)
 
@@ -554,12 +577,21 @@ func _restore_deck(num: int):
 	deck.put_cards_bottom(cards_from_discard)
 	
 func boss_to_deck(boss: Card, mercy: bool = false):
+	# 播放Boss击败音效
+	AudioManager.play_boss_defeat()
+	
+	# 执行Boss击败动画
+	boss.animate_defeated()
+	await get_tree().create_timer(0.3).timeout  # 等待动画完成
+	
 	# 重置Boss牌状态
 	boss.role = CardData.CardPosition.DECK
 	boss.card_type = CardData.CardType.BOSS  # 保持Boss类型标识
 	boss.back = true  # 显示背面
 	boss.disabled = false
 	boss.selected = false
+	boss.modulate = Color(1.0, 1.0, 1.0, 1.0)  # 重置颜色
+	boss.scale = CardData.ORIGIN_SCALE  # 重置缩放
 	
 	if mercy:
 		# 恰好击败Boss，放回牌堆顶部

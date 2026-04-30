@@ -221,6 +221,7 @@ text = "离开房间"
 
 [connection signal="pressed" from="VBoxContainer/HBoxContainer/RoomListContainer/ButtonContainer/RefreshBtn" to="." method="_on_refresh_btn_pressed"]
 [connection signal="item_selected" from="VBoxContainer/HBoxContainer/RoomListContainer/RoomList" to="." method="_on_room_list_item_selected"]
+[connection signal="empty_clicked" from="VBoxContainer/HBoxContainer/RoomListContainer/RoomList" to="." method="_on_room_list_empty_clicked"]
 [connection signal="pressed" from="VBoxContainer/HBoxContainer/RoomListContainer/ButtonContainer/JoinBtn" to="." method="_on_join_btn_pressed"]
 [connection signal="pressed" from="VBoxContainer/HBoxContainer/DirectJoinContainer/DirectJoinBtn" to="." method="_on_direct_join_btn_pressed"]
 [connection signal="pressed" from="VBoxContainer/CreateBtn" to="." method="_on_create_btn_pressed"]

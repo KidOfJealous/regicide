@@ -8,17 +8,22 @@
 
 config_version=5
 
+[animation]
+
+compatibility/default_parent_skeleton_in_mesh_instance_3d=true
+
 [application]
 
 config/name="REGICIDE"
 run/main_scene="res://scenes/lobby.tscn"
-config/features=PackedStringArray("4.5", "Mobile")
+config/features=PackedStringArray("4.6", "Mobile")
 config/icon="res://icon.svg"
 
 [autoload]
 
 CardData="*res://scripts/card_data.gd"
 NetworkManager="*res://scripts/network_manager.gd"
+AudioManager="*res://scripts/audio_manager.gd"
 
 [editor]
 

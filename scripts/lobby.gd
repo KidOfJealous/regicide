@@ -15,11 +15,11 @@ class_name Lobby
 
 # 创建房间面板
 @onready var create_panel:Control = $CreateRoomPanel
-@onready var create_room_name:LineEdit = $CreateRoomPanel/VBoxContainer/RoomNameEdit
-@onready var create_max_players:OptionButton = $CreateRoomPanel/VBoxContainer/MaxPlayersOption
-@onready var create_port:SpinBox = $CreateRoomPanel/VBoxContainer/PortSpinBox
-@onready var create_confirm_btn:Button = $CreateRoomPanel/VBoxContainer/ConfirmBtn
-@onready var create_cancel_btn:Button = $CreateRoomPanel/VBoxContainer/CancelBtn
+@onready var create_room_name:LineEdit = $CreateRoomPanel/VBoxContainer/RoomNameContainer/RoomNameEdit
+@onready var create_max_players:OptionButton = $CreateRoomPanel/VBoxContainer/MaxPlayersContainer/MaxPlayersOption
+@onready var create_port:SpinBox = $CreateRoomPanel/VBoxContainer/PortContainer/PortSpinBox
+@onready var create_confirm_btn:Button = $CreateRoomPanel/VBoxContainer/ButtonContainer/ConfirmBtn
+@onready var create_cancel_btn:Button = $CreateRoomPanel/VBoxContainer/ButtonContainer/CancelBtn
 
 # 等待房间面板
 @onready var waiting_panel:Control = $WaitingRoomPanel
@@ -65,7 +65,7 @@ func _init_ui() -> void:
 	create_max_players.clear()
 	for i in range(2, 5):
 		create_max_players.add_item(str(i) + "人", i)
-	create_max_players.selected = 2  # 默认4人
+	create_max_players.selected = 0  # 默认2人（第一个选项）
 	
 	# 默认端口
 	create_port.value = NetworkManager.DEFAULT_PORT
@@ -100,12 +100,14 @@ func _show_waiting_panel() -> void:
 # ==================== 主面板按钮 ====================
 
 func _on_refresh_btn_pressed() -> void:
+	AudioManager.play_button_click()
 	# 清空列表重新发现
 	room_list.clear()
 	network_mgr.discovered_rooms.clear()
 	network_mgr.start_room_discovery()
 
 func _on_join_btn_pressed() -> void:
+	AudioManager.play_button_click()
 	if selected_room_index < 0 or selected_room_index >= network_mgr.discovered_rooms.size():
 		return
 	
@@ -121,6 +123,7 @@ func _on_join_btn_pressed() -> void:
 		_show_waiting_panel()
 
 func _on_direct_join_btn_pressed() -> void:
+	AudioManager.play_button_click()
 	var ip = ip_edit.text.strip_edges()
 	if ip.is_empty():
 		return
@@ -136,10 +139,14 @@ func _on_direct_join_btn_pressed() -> void:
 		_show_waiting_panel()
 
 func _on_create_btn_pressed() -> void:
+	AudioManager.play_button_click()
 	_show_create_panel()
 
 func _on_start_single_btn_pressed() -> void:
-	# 单人模式直接开始游戏
+	AudioManager.play_button_click()
+	# 单人模式：确保网络管理器状态正确
+	network_mgr.is_connected = false
+	network_mgr.is_host = false
 	network_mgr.player_count = 1
 	get_tree().change_scene_to_file("res://scenes/game_scene.tscn")
 
@@ -161,6 +168,7 @@ func _on_room_list_empty_clicked() -> void:
 # ==================== 创建房间面板 ====================
 
 func _on_create_confirm_btn_pressed() -> void:
+	AudioManager.play_button_click()
 	var room_name_arg = create_room_name.text.strip_edges()
 	if room_name_arg.is_empty():
 		room_name_arg = player_name_edit.text + "的房间"
@@ -181,6 +189,7 @@ func _on_create_confirm_btn_pressed() -> void:
 		waiting_status.text = "创建房间失败"
 
 func _on_create_cancel_btn_pressed() -> void:
+	AudioManager.play_button_click()
 	_show_main_panel()
 
 # ==================== 等待房间面板 ====================
@@ -230,10 +239,12 @@ func _on_player_disconnected(peer_id: int) -> void:
 		_update_waiting_panel()
 
 func _on_start_game_btn_pressed() -> void:
+	AudioManager.play_button_click()
 	if network_mgr.can_start_game():
 		network_mgr.start_game()
 
 func _on_leave_btn_pressed() -> void:
+	AudioManager.play_button_click()
 	if network_mgr.is_host:
 		network_mgr.close_room()
 	else:

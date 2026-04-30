@@ -1,5 +1,5 @@
 extends Node
-class_name NetworkManager
+# NetworkManager - 网络管理器（自动加载单例，无需class_name）
 
 # 信号
 signal player_connected(peer_id: int, player_name: String)

@@ -52,6 +52,9 @@ func update_position() -> void:
 func select_card(card: Card) -> void:
 	if station==CardData.TurnStation.DEFEND or card.selected or CardData.isValidCards(selected_cards, card):
 		card.selected = not card.selected
+		# 播放选牌音效
+		if card.selected:
+			AudioManager.play_card_select()
 		selected_cards = cards.filter(func(c: Card): return c.selected)
 		update_position()
 		update_button_state()
