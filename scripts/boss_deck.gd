@@ -5,9 +5,14 @@ var current_boss_health: int
 var current_boss_attack: int:
 	set(value):
 		current_boss_attack = max(0, value)
+# Boss免疫状态 - 默认为false，Joker可将其设为true取消免疫
+var immune_cancelled: bool = false
 # Called when the node enters the scene tree for the first time.
 @onready var health_text: Label = $"./Health"
 @onready var attach_text: Label = $"./Attack"
+@onready var immune_text: Label = $"./Immune"
+# 花色名称映射（与CardData.Suit枚举对应）
+const SUIT_NAMES = ["黑桃", "方块", "红心", "梅花"]
 const health_template = "生命值：{0}/{1}"
 const attack_template = "攻击力：{0}/{1}"
 func _ready() -> void:
@@ -31,6 +36,22 @@ func refresh_status() -> void:
 	var attack = current_boss.value
 	health_text.text=health_template.format([self.current_boss_health,attack*2])
 	attach_text.text=attack_template.format([self.current_boss_attack,attack])
+	# 更新免疫状态显示
+	_update_immune_display()
+
+# 更新免疫状态显示
+func _update_immune_display() -> void:
+	if immune_text:
+		if current_boss and current_boss.suit != null:
+			var suit_name = SUIT_NAMES[current_boss.suit]
+			if immune_cancelled:
+				immune_text.text = "免疫已取消"
+				immune_text.add_theme_color_override("font_color", Color.YELLOW)
+			else:
+				immune_text.text = "免疫: " + suit_name
+				immune_text.add_theme_color_override("font_color", Color.WHITE)
+		else:
+			immune_text.text = ""
 	
 func draw_card() -> void:
 	if _cards.is_empty():
@@ -38,6 +59,8 @@ func draw_card() -> void:
 	current_boss = _cards.pop_back() as Card
 	current_boss_health = current_boss.value * 2
 	current_boss_attack = current_boss.value
+	# 新Boss出现时重置免疫状态
+	immune_cancelled = false
 	current_boss.flip()
 	card_manager_ref.add_child(current_boss)
 	refresh_status()

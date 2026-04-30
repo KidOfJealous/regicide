@@ -65,6 +65,16 @@ func remove_selected() -> void:
 	selected_cards = []
 	update_position()
 
+# 获取所有手牌（用于重抽功能）
+func get_all_cards() -> Array[Card]:
+	return cards.duplicate()
+
+# 清空手牌（用于重抽功能）
+func clear_hand() -> void:
+	cards = []
+	selected_cards = []
+	update_position()
+
 func get_selected() -> Array[Card]:
 	return selected_cards.duplicate()
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -102,4 +112,6 @@ func update_button_state() -> void:
 			# 如果不需要弃牌（目标值为0），按钮应始终可用
 			confirm_button.disabled = false
 	else:
-		confirm_button.disabled = selected_cards.size() == 0
+		# 玩家回合：允许不出牌（Yield功能）
+		# 按钮始终可用，不选牌时视为Yield
+		confirm_button.disabled = false

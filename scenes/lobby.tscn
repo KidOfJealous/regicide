@@ -1,0 +1,231 @@
+[gd_scene load_steps=2 format=3 uid="uid://lobby_scene"]
+
+[ext_resource type="Script" path="res://scripts/lobby.gd" id="1_lobby"]
+
+[node name="Lobby" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_lobby")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 20.0
+offset_top = 20.0
+offset_right = -20.0
+offset_bottom = -20.0
+
+[node name="TitleLabel" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+text = "Regicide 弑君者 - 多人联机大厅"
+horizontal_alignment = 1
+
+[node name="PlayerNameContainer" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="PlayerNameLabel" type="Label" parent="VBoxContainer/PlayerNameContainer"]
+layout_mode = 2
+text = "你的名字："
+
+[node name="PlayerNameEdit" type="LineEdit" parent="VBoxContainer/PlayerNameContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "输入你的名字"
+
+[node name="HSeparator" type="HSeparator" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="RoomListContainer" type="VBoxContainer" parent="VBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="RoomListLabel" type="Label" parent="VBoxContainer/HBoxContainer/RoomListContainer"]
+layout_mode = 2
+text = "局域网房间列表"
+
+[node name="RoomList" type="ItemList" parent="VBoxContainer/HBoxContainer/RoomListContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+item_count = 0
+allow_search = false
+
+[node name="ButtonContainer" type="HBoxContainer" parent="VBoxContainer/HBoxContainer/RoomListContainer"]
+layout_mode = 2
+
+[node name="RefreshBtn" type="Button" parent="VBoxContainer/HBoxContainer/RoomListContainer/ButtonContainer"]
+layout_mode = 2
+text = "刷新"
+
+[node name="JoinBtn" type="Button" parent="VBoxContainer/HBoxContainer/RoomListContainer/ButtonContainer"]
+layout_mode = 2
+disabled = true
+text = "加入选中房间"
+
+[node name="DirectJoinContainer" type="HBoxContainer" parent="VBoxContainer/HBoxContainer"]
+layout_mode = 2
+
+[node name="DirectJoinLabel" type="Label" parent="VBoxContainer/HBoxContainer/DirectJoinContainer"]
+layout_mode = 2
+text = "直接连接："
+
+[node name="IpEdit" type="LineEdit" parent="VBoxContainer/HBoxContainer/DirectJoinContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "输入IP地址"
+
+[node name="DirectJoinBtn" type="Button" parent="VBoxContainer/HBoxContainer/DirectJoinContainer"]
+layout_mode = 2
+text = "连接"
+
+[node name="HSeparator2" type="HSeparator" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="CreateBtn" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+text = "创建房间"
+
+[node name="StartSingleBtn" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+text = "单人模式开始游戏"
+
+[node name="CreateRoomPanel" type="Control" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -150.0
+offset_top = -100.0
+offset_right = 150.0
+offset_bottom = 100.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CreateRoomPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = 10.0
+offset_right = -10.0
+offset_bottom = -10.0
+
+[node name="TitleLabel" type="Label" parent="CreateRoomPanel/VBoxContainer"]
+layout_mode = 2
+text = "创建房间"
+horizontal_alignment = 1
+
+[node name="RoomNameContainer" type="HBoxContainer" parent="CreateRoomPanel/VBoxContainer"]
+layout_mode = 2
+
+[node name="RoomNameLabel" type="Label" parent="CreateRoomPanel/VBoxContainer/RoomNameContainer"]
+layout_mode = 2
+text = "房间名："
+
+[node name="RoomNameEdit" type="LineEdit" parent="CreateRoomPanel/VBoxContainer/RoomNameContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="MaxPlayersContainer" type="HBoxContainer" parent="CreateRoomPanel/VBoxContainer"]
+layout_mode = 2
+
+[node name="MaxPlayersLabel" type="Label" parent="CreateRoomPanel/VBoxContainer/MaxPlayersContainer"]
+layout_mode = 2
+text = "最大人数："
+
+[node name="MaxPlayersOption" type="OptionButton" parent="CreateRoomPanel/VBoxContainer/MaxPlayersContainer"]
+layout_mode = 2
+
+[node name="PortContainer" type="HBoxContainer" parent="CreateRoomPanel/VBoxContainer"]
+layout_mode = 2
+
+[node name="PortLabel" type="Label" parent="CreateRoomPanel/VBoxContainer/PortContainer"]
+layout_mode = 2
+text = "端口："
+
+[node name="PortSpinBox" type="SpinBox" parent="CreateRoomPanel/VBoxContainer/PortContainer"]
+layout_mode = 2
+value = 8920.0
+
+[node name="HSeparator" type="HSeparator" parent="CreateRoomPanel/VBoxContainer"]
+layout_mode = 2
+
+[node name="ButtonContainer" type="HBoxContainer" parent="CreateRoomPanel/VBoxContainer"]
+layout_mode = 2
+alignment = 1
+
+[node name="CancelBtn" type="Button" parent="CreateRoomPanel/VBoxContainer/ButtonContainer"]
+layout_mode = 2
+text = "取消"
+
+[node name="ConfirmBtn" type="Button" parent="CreateRoomPanel/VBoxContainer/ButtonContainer"]
+layout_mode = 2
+text = "创建"
+
+[node name="WaitingRoomPanel" type="Control" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 20.0
+offset_top = 20.0
+offset_right = -20.0
+offset_bottom = -20.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="WaitingRoomPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="RoomNameLabel" type="Label" parent="WaitingRoomPanel/VBoxContainer"]
+layout_mode = 2
+text = "房间名称"
+horizontal_alignment = 1
+
+[node name="PlayerListLabel" type="Label" parent="WaitingRoomPanel/VBoxContainer"]
+layout_mode = 2
+text = "已加入玩家："
+
+[node name="PlayerList" type="ItemList" parent="WaitingRoomPanel/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="StatusLabel" type="Label" parent="WaitingRoomPanel/VBoxContainer"]
+layout_mode = 2
+text = "等待玩家加入..."
+horizontal_alignment = 1
+
+[node name="StartGameBtn" type="Button" parent="WaitingRoomPanel/VBoxContainer"]
+layout_mode = 2
+disabled = true
+text = "开始游戏"
+
+[node name="LeaveBtn" type="Button" parent="WaitingRoomPanel/VBoxContainer"]
+layout_mode = 2
+text = "离开房间"
+
+[connection signal="pressed" from="VBoxContainer/HBoxContainer/RoomListContainer/ButtonContainer/RefreshBtn" to="." method="_on_refresh_btn_pressed"]
+[connection signal="item_selected" from="VBoxContainer/HBoxContainer/RoomListContainer/RoomList" to="." method="_on_room_list_item_selected"]
+[connection signal="pressed" from="VBoxContainer/HBoxContainer/RoomListContainer/ButtonContainer/JoinBtn" to="." method="_on_join_btn_pressed"]
+[connection signal="pressed" from="VBoxContainer/HBoxContainer/DirectJoinContainer/DirectJoinBtn" to="." method="_on_direct_join_btn_pressed"]
+[connection signal="pressed" from="VBoxContainer/CreateBtn" to="." method="_on_create_btn_pressed"]
+[connection signal="pressed" from="VBoxContainer/StartSingleBtn" to="." method="_on_start_single_btn_pressed"]
+[connection signal="pressed" from="CreateRoomPanel/VBoxContainer/ButtonContainer/CancelBtn" to="." method="_on_create_cancel_btn_pressed"]
+[connection signal="pressed" from="CreateRoomPanel/VBoxContainer/ButtonContainer/ConfirmBtn" to="." method="_on_create_confirm_btn_pressed"]
+[connection signal="pressed" from="WaitingRoomPanel/VBoxContainer/StartGameBtn" to="." method="_on_start_game_btn_pressed"]
+[connection signal="pressed" from="WaitingRoomPanel/VBoxContainer/LeaveBtn" to="." method="_on_leave_btn_pressed"]

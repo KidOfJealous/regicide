@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://dehlqbcjxuxjj"]
+[gd_scene load_steps=13 format=3 uid="uid://dehlqbcjxuxjj"]
 
 [ext_resource type="PackedScene" uid="uid://oyagdtserp0a" path="res://scenes/card_manager.tscn" id="1_mw25s"]
 [ext_resource type="PackedScene" uid="uid://demeq3rjvd3dl" path="res://scenes/deck.tscn" id="2_tcjrq"]
@@ -11,6 +11,7 @@
 [ext_resource type="Script" uid="uid://dx5vrod8amtcp" path="res://scripts/players.gd" id="9_mw25s"]
 [ext_resource type="PackedScene" uid="uid://bqxkcu7y62r10" path="res://scenes/player.tscn" id="9_s76x2"]
 [ext_resource type="PackedScene" uid="uid://gameover" path="res://scenes/game_over.tscn" id="10_gameover"]
+[ext_resource type="PackedScene" uid="uid://multiplayer_panel" path="res://scenes/multiplayer_info_panel.tscn" id="11_panel"]
 
 [node name="GameScene" type="Node2D"]
 
@@ -45,4 +46,7 @@ script = ExtResource("9_mw25s")
 [node name="Player" parent="Players" instance=ExtResource("9_s76x2")]
 
 [node name="GameOver" parent="." instance=ExtResource("10_gameover")]
+visible = false
+
+[node name="MultiplayerInfoPanel" parent="." instance=ExtResource("11_panel")]
 visible = false

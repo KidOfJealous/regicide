@@ -1,0 +1,39 @@
+[gd_scene load_steps=2 format=3 uid="uid://multiplayer_panel"]
+
+[ext_resource type="Script" path="res://scripts/multiplayer_info_panel.gd" id="1_panel"]
+
+[node name="MultiplayerInfoPanel" type="Control"]
+anchors_preset = 0
+offset_left = 10.0
+offset_top = 10.0
+offset_right = 200.0
+offset_bottom = 150.0
+script = ExtResource("1_panel")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = -5.0
+offset_bottom = -5.0
+
+[node name="CurrentPlayerLabel" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+text = "当前回合：等待..."
+
+[node name="HSeparator" type="HSeparator" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="PlayerListLabel" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+text = "玩家列表"
+
+[node name="PlayerListContainer" type="VBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="HSeparator2" type="HSeparator" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="NetworkStatusLabel" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+text = "网络状态"

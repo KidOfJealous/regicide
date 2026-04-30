@@ -22,6 +22,10 @@ var value: int
 var suit: CardData.Suit
 var rank: String
 var role: CardData.CardPosition
+# 卡牌类型：普通牌、Boss牌、Joker牌
+var card_type: CardData.CardType = CardData.CardType.NORMAL
+# Joker类型（仅Joker牌使用）
+var joker_type: CardData.Joker = CardData.Joker.LITTE_JOKER
 var back: bool = false:
 	set(value):
 		back = value
@@ -50,7 +54,22 @@ static func init_boss_scene(s: CardData.Suit = CardData.Suit.SPADE, num: CardDat
 	card.rank = CardData.BossNames[num]
 	card.suit = s
 	card.value = CardData.BossValues[num]
+	card.card_type = CardData.CardType.BOSS
 	(card.get_node("front") as Sprite2D).texture = load(str("res://images/" + CardData.SuitNames[s] + "_" + card.rank + ".png"))
+	card.back = b
+	return card
+
+# 创建Joker牌
+static func init_joker_scene(joker_type: CardData.Joker = CardData.Joker.LITTE_JOKER, b: bool = false) -> Card:
+	var card: Card = card_scene.instantiate()
+	card.rank = "joker"
+	card.value = CardData.JOKER_VALUE
+	card.card_type = CardData.CardType.JOKER
+	card.joker_type = joker_type  # 保存Joker类型
+	# Joker没有花色，SPADE仅作为占位符，不应在任何花色效果逻辑中使用
+	# Joker打出后会直接取消免疫并跳过攻击，不会触发花色效果
+	card.suit = CardData.Suit.SPADE
+	(card.get_node("front") as Sprite2D).texture = load("res://images/joker.png")
 	card.back = b
 	return card
 

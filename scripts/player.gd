@@ -63,13 +63,14 @@ func get_hand_card_sum() -> int:
 	return hand.card_sum
 
 # 检查是否可以添加卡牌（手牌上限检查）
-func can_add_card() -> bool:
-	return hand.card_size < CardData.MAX_HAND_CARD_NUM
+# limit参数可选，默认使用单人模式上限8张
+func can_add_card(limit: int = CardData.MAX_HAND_CARD_NUM) -> bool:
+	return hand.card_size < limit
 
 # 更新状态标签文本
 func _update_status_label(discard_target: int = 0) -> void:
 	if hand.station == CardData.TurnStation.PLAYER:
-		status_label.text = "请选择要出的牌"
+		status_label.text = "请选择要出的牌（或不选择直接确认跳过）"
 	elif hand.station == CardData.TurnStation.DEFEND:
 		if discard_target > 0:
 			status_label.text = "请弃掉至少 " + str(discard_target) + " 点数的牌"

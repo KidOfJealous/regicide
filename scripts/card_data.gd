@@ -32,10 +32,17 @@ enum CardPosition{
 	FIELD,
 	BOSS,
 	DISCARD,
+	JOKER,  # Joker牌位置
 }
 enum TurnStation{
 	PLAYER,
 	DEFEND,
+}
+# 卡牌类型枚举
+enum CardType{
+	NORMAL,  # 普通牌 (A-10)
+	BOSS,    # Boss牌 (J/Q/K)
+	JOKER,   # Joker牌
 }
 const CARD_WIDTH = 73.2
 const CARD_LENGTH = 102.4
@@ -53,10 +60,28 @@ const DECK_COLLISION_MASK = 4
 const BOSS_COLLISION_MASK = 5
 const FIELD_COLLISION_MASK = 6
 const DISCARD_COLLISION_MASK = 7
-const MAX_HAND_CARD_NUM = 7
+const MAX_HAND_CARD_NUM = 8  # 单人模式手牌上限（多人模式为5-7张）
 const CARD_SUM_MAX = 10
+# Joker牌值（用于显示和识别）
+const JOKER_VALUE = 0  # Joker牌没有攻击值
+
+# 多人模式配置
+# 2人：0 Joker，手牌上限7
+# 3人：1 Joker，手牌上限6
+# 4人：2 Joker，手牌上限5
+const MULTIPLAYER_CONFIG = {
+	1: {"jokers": 0, "hand_size": 8},  # 单人模式
+	2: {"jokers": 0, "hand_size": 7},  # 2人模式
+	3: {"jokers": 1, "hand_size": 6},  # 3人模式
+	4: {"jokers": 2, "hand_size": 5},  # 4人模式
+}
 func sum(x:int,y:Card):
 	return x+y.value
+
+# 检查卡牌是否为Joker
+func is_joker(card: Card) -> bool:
+	return card.card_type == CardType.JOKER
+
 func isValidCards(cards:Array[Card],extra:Card)->bool:
 	cards = cards.duplicate()
 	cards.push_back(extra)
@@ -64,6 +89,11 @@ func isValidCards(cards:Array[Card],extra:Card)->bool:
 	# 如果只有一张牌，则合法（规则1）
 	if cards.size() == 1:
 		return true
+	
+	# 检查是否包含Joker - Joker只能单独打出
+	for card in cards:
+		if is_joker(card):
+			return cards.size() == 1  # Joker只能单独出
 	
 	# 检查是否符合出牌规则
 	# 规则2: 一张牌（可以是A）和若干A
