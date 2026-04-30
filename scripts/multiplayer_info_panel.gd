@@ -6,9 +6,9 @@ class_name MultiplayerInfoPanel
 @onready var player_list_container: VBoxContainer = $VBoxContainer/PlayerListContainer
 @onready var network_status_label: Label = $VBoxContainer/NetworkStatusLabel
 
-# 网络管理器引用
-var network_mgr: NetworkManager = null
-var play_ground: Node = null
+# 网络管理器引用（自动加载单例，动态类型）
+var network_mgr = null
+var play_ground_ref = null
 
 # 玩家信息条目缓存
 var player_info_labels: Dictionary = {}
@@ -16,7 +16,7 @@ var player_info_labels: Dictionary = {}
 func _ready() -> void:
 	# 获取引用
 	network_mgr = get_node_or_null("/root/NetworkManager")
-	play_ground = get_node_or_null("../PlayGround")
+	play_ground_ref = get_node_or_null("../PlayGround")
 	
 	if network_mgr and network_mgr.is_connected:
 		_init_player_list()
@@ -31,6 +31,8 @@ func _process(delta: float) -> void:
 		visible = false
 
 func _init_player_list() -> void:
+	if not network_mgr or not player_list_container:
+		return
 	# 清空现有列表
 	for child in player_list_container.get_children():
 		child.queue_free()
@@ -47,32 +49,35 @@ func _init_player_list() -> void:
 
 func _update_display() -> void:
 	# 更新当前玩家指示
-	if play_ground and play_ground.is_multiplayer:
-		var current_peer = play_ground.player_peer_ids[play_ground.current_player_index]
+	if play_ground_ref and play_ground_ref.is_multiplayer and network_mgr:
+		var current_peer = play_ground_ref.player_peer_ids[play_ground_ref.current_player_index]
 		var current_name = network_mgr.get_player_name(current_peer)
-		if play_ground.is_my_turn:
-			current_player_label.text = "当前回合：你"
-			current_player_label.add_theme_color_override("font_color", Color.GREEN)
-		else:
-			current_player_label.text = "当前回合：" + current_name
-			current_player_label.add_theme_color_override("font_color", Color.YELLOW)
+		if current_player_label:
+			if play_ground_ref.is_my_turn:
+				current_player_label.text = "当前回合：你"
+				current_player_label.add_theme_color_override("font_color", Color.GREEN)
+			else:
+				current_player_label.text = "当前回合：" + current_name
+				current_player_label.add_theme_color_override("font_color", Color.YELLOW)
 		
 		# 更新玩家手牌数量
 		for peer_id in player_info_labels:
 			var label = player_info_labels[peer_id]
 			var name = network_mgr.get_player_name(peer_id)
-			var hand_count = play_ground.player_hand_counts.get(peer_id, 0)
+			var hand_count = play_ground_ref.player_hand_counts.get(peer_id, 0)
 			var prefix = ""
 			if peer_id == current_peer:
 				prefix = "▶ "
-			if peer_id == play_ground.my_peer_id:
+			if peer_id == play_ground_ref.my_peer_id:
 				prefix += "[你] "
 			if peer_id == network_mgr.host_peer_id:
 				prefix += "[主机] "
-			label.text = prefix + name + " - 手牌: " + str(hand_count)
+			if label:
+				label.text = prefix + name + " - 手牌: " + str(hand_count)
 	
 	# 更新网络状态
-	if network_mgr.is_host:
-		network_status_label.text = "你是主机 | 玩家: " + str(network_mgr.get_player_count())
-	else:
-		network_status_label.text = "已连接主机 | 玩家: " + str(network_mgr.get_player_count())
+	if network_mgr and network_status_label:
+		if network_mgr.is_host:
+			network_status_label.text = "你是主机 | 玩家: " + str(network_mgr.get_player_count())
+		else:
+			network_status_label.text = "已连接主机 | 玩家: " + str(network_mgr.get_player_count())

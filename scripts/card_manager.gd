@@ -1,13 +1,11 @@
 class_name CardManager extends Node2D
 
-# 导入Player类以解决"Could not find type Player"错误
-const Player = preload("res://scripts/player.gd")
-
-# var card_dragging:Card
+# 使用动态类型避免 "Could not find type" 错误
 var card_hovering: Card
 var screen_size: Vector2
 @export var player_path: NodePath = "../Players/Player"
-@onready var player: Player = get_node(player_path)
+@onready var player = get_node(player_path)
+
 # Called when the node enters the scene tree for the first time.
 func _input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:

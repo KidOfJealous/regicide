@@ -1,10 +1,15 @@
 class_name Deck extends Node2D
 var _cards:Array[Card] = []
-# Called when the node enters the scene tree for the first time.
+
+# 使用普通变量而非@onready，避免加载顺序问题
+var card_manager_ref  # 动态类型
+var count_label: Label
+
 func _ready() -> void:
-	_init_hand_cards() # Replace with function body.
-@onready var card_manager_ref:CardManager=$"../CardManager"
-@onready var count_label: Label = $CountLabel
+	# 手动初始化节点引用（在调用其他函数之前）
+	card_manager_ref = get_node_or_null("../CardManager")
+	count_label = get_node_or_null("CountLabel")
+	_init_hand_cards()
 
 func _init_hand_cards()->void:
 	# 多人模式下客户端不需要初始化牌堆（由主机同步）
@@ -38,7 +43,7 @@ func get_cards(num:int=1)->Array[Card]:
 	return result
 
 # 旧的draw_card方法保留以保持兼容，但现在需要传入player引用和可选的手牌上限
-func draw_card(num:int=1, player: Player = null, hand_limit: int = CardData.MAX_HAND_CARD_NUM)->void:
+func draw_card(num:int=1, player = null, hand_limit: int = CardData.MAX_HAND_CARD_NUM)->void:
 	if player == null:
 		# 如果没有传入player，直接返回，这是为了防止错误
 		push_error("Deck.draw_card() requires a player parameter. Use get_cards() instead.")
@@ -49,9 +54,13 @@ func draw_card(num:int=1, player: Player = null, hand_limit: int = CardData.MAX_
 	else:
 		while num>0 and player.can_add_card(hand_limit) and not _cards.is_empty():
 			var card = _cards.pop_back() as Card
-			card_manager_ref.add_child(card)
+			if card_manager_ref:
+				card_manager_ref.add_child(card)
 			player.add_card_to_hand(card)
-			card.flip()
+			if card._is_ready:
+				card.flip()
+			else:
+				card.call_deferred("flip")
 			num-=1
 			await  get_tree().create_timer(0.2).timeout
 	updateStatus()

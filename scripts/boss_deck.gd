@@ -7,17 +7,25 @@ var current_boss_attack: int:
 		current_boss_attack = max(0, value)
 # Boss免疫状态 - 默认为false，Joker可将其设为true取消免疫
 var immune_cancelled: bool = false
-# Called when the node enters the scene tree for the first time.
-@onready var health_text: Label = $"./Health"
-@onready var attach_text: Label = $"./Attack"
-@onready var immune_text: Label = $"./Immune"
+
+# 使用普通变量而非@onready，在_ready中手动初始化
+var health_text: Label
+var attach_text: Label
+var immune_text: Label
+var card_manager_ref  # 动态类型
+
 # 花色名称映射（与CardData.Suit枚举对应）
 const SUIT_NAMES = ["黑桃", "方块", "红心", "梅花"]
 const health_template = "生命值：{0}/{1}"
 const attack_template = "攻击力：{0}/{1}"
+
 func _ready() -> void:
-	_init_boss_cards() # Replace with function body.
-@onready var card_manager_ref: CardManager = $"../CardManager"
+	# 手动初始化节点引用（在调用其他函数之前）
+	health_text = get_node_or_null("Health")
+	attach_text = get_node_or_null("Attack")
+	immune_text = get_node_or_null("Immune")
+	card_manager_ref = get_node_or_null("../CardManager")
+	_init_boss_cards()
 func _init_boss_cards() -> void:
 	for i in range(2, -1, -1):
 		var _temp: Array[Card] = []
@@ -62,5 +70,6 @@ func draw_card() -> void:
 	# 新Boss出现时重置免疫状态
 	immune_cancelled = false
 	current_boss.flip()
-	card_manager_ref.add_child(current_boss)
+	if card_manager_ref:
+		card_manager_ref.add_child(current_boss)
 	refresh_status()

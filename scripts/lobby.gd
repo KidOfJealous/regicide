@@ -2,10 +2,10 @@ extends Control
 class_name Lobby
 
 # UI节点引用
-@onready var player_name_edit:LineEdit = $VBoxContainer/PlayerNameEdit
+@onready var player_name_edit:LineEdit = $VBoxContainer/PlayerNameContainer/PlayerNameEdit
 @onready var room_list:ItemList = $VBoxContainer/HBoxContainer/RoomListContainer/RoomList
-@onready var refresh_btn:Button = $VBoxContainer/HBoxContainer/RoomListContainer/RefreshBtn
-@onready var join_btn:Button = $VBoxContainer/HBoxContainer/RoomListContainer/JoinBtn
+@onready var refresh_btn:Button = $VBoxContainer/HBoxContainer/RoomListContainer/ButtonContainer/RefreshBtn
+@onready var join_btn:Button = $VBoxContainer/HBoxContainer/RoomListContainer/ButtonContainer/JoinBtn
 @onready var direct_join_container:HBoxContainer = $VBoxContainer/HBoxContainer/DirectJoinContainer
 @onready var ip_edit:LineEdit = $VBoxContainer/HBoxContainer/DirectJoinContainer/IpEdit
 @onready var direct_join_btn:Button = $VBoxContainer/HBoxContainer/DirectJoinContainer/DirectJoinBtn
@@ -29,8 +29,8 @@ class_name Lobby
 @onready var waiting_start_btn:Button = $WaitingRoomPanel/VBoxContainer/StartGameBtn
 @onready var waiting_leave_btn:Button = $WaitingRoomPanel/VBoxContainer/LeaveBtn
 
-# 网络管理器
-var network_mgr: NetworkManager = null
+# 网络管理器（自动加载单例，动态类型）
+var network_mgr = null
 
 # 状态
 var current_state: String = "main"  # main, create, waiting
@@ -55,23 +55,27 @@ func _ready() -> void:
 	_show_main_panel()
 	
 	# 设置默认玩家名
-	player_name_edit.text = "Player" + str(randi() % 1000)
+	if player_name_edit:
+		player_name_edit.text = "Player" + str(randi() % 1000)
 	
 	# 开始房间发现
 	network_mgr.start_room_discovery()
 
 func _init_ui() -> void:
-	# 初始化最大玩家数选项
-	create_max_players.clear()
-	for i in range(2, 5):
-		create_max_players.add_item(str(i) + "人", i)
-	create_max_players.selected = 0  # 默认2人（第一个选项）
+	# 初始化最大玩家数选项（安全检查）
+	if create_max_players:
+		create_max_players.clear()
+		for i in range(2, 5):
+			create_max_players.add_item(str(i) + "人", i)
+		create_max_players.selected = 0  # 默认2人（第一个选项）
 	
 	# 默认端口
-	create_port.value = NetworkManager.DEFAULT_PORT
+	if create_port:
+		create_port.value = NetworkManager.DEFAULT_PORT
 	
 	# 默认IP提示
-	ip_edit.placeholder_text = "输入主机IP地址"
+	if ip_edit:
+		ip_edit.placeholder_text = "输入主机IP地址"
 
 func _process(delta: float) -> void:
 	# 更新等待面板玩家列表
@@ -102,8 +106,10 @@ func _show_waiting_panel() -> void:
 func _on_refresh_btn_pressed() -> void:
 	AudioManager.play_button_click()
 	# 清空列表重新发现
-	room_list.clear()
-	network_mgr.discovered_rooms.clear()
+	if room_list:
+		room_list.clear()
+	if network_mgr and network_mgr.discovered_rooms:
+		network_mgr.discovered_rooms.clear()
 	network_mgr.start_room_discovery()
 
 func _on_join_btn_pressed() -> void:
@@ -112,7 +118,9 @@ func _on_join_btn_pressed() -> void:
 		return
 	
 	var room_info = network_mgr.discovered_rooms[selected_room_index]
-	var player_name = player_name_edit.text.strip_edges()
+	var player_name = "Player"
+	if player_name_edit:
+		player_name = player_name_edit.text.strip_edges()
 	if player_name.is_empty():
 		player_name = "Player"
 	
@@ -124,18 +132,27 @@ func _on_join_btn_pressed() -> void:
 
 func _on_direct_join_btn_pressed() -> void:
 	AudioManager.play_button_click()
-	var ip = ip_edit.text.strip_edges()
+	var ip = ""
+	if ip_edit:
+		ip = ip_edit.text.strip_edges()
 	if ip.is_empty():
 		return
 	
-	var player_name = player_name_edit.text.strip_edges()
+	var player_name = "Player"
+	if player_name_edit:
+		player_name = player_name_edit.text.strip_edges()
 	if player_name.is_empty():
 		player_name = "Player"
 	
+	var port = NetworkManager.DEFAULT_PORT
+	if create_port:
+		port = int(create_port.value)
+	
 	network_mgr.set_player_name(player_name)
-	var success = network_mgr.join_room(ip, int(create_port.value))
+	var success = network_mgr.join_room(ip, port)
 	if success:
-		waiting_status.text = "正在连接..."
+		if waiting_status:
+			waiting_status.text = "正在连接..."
 		_show_waiting_panel()
 
 func _on_create_btn_pressed() -> void:
@@ -145,39 +162,54 @@ func _on_create_btn_pressed() -> void:
 func _on_start_single_btn_pressed() -> void:
 	AudioManager.play_button_click()
 	# 单人模式：确保网络管理器状态正确
-	network_mgr.is_connected = false
-	network_mgr.is_host = false
-	network_mgr.player_count = 1
+	if network_mgr:
+		network_mgr.is_connected = false
+		network_mgr.is_host = false
+		network_mgr.player_count = 1
 	get_tree().change_scene_to_file("res://scenes/game_scene.tscn")
 
 # ==================== 房间列表 ====================
 
 func _on_room_discovered(room_info: Dictionary) -> void:
 	# 添加到列表
-	var display_text = room_info["name"] + " (" + str(room_info["current_players"]) + "/" + str(room_info["max_players"]) + ")"
-	room_list.add_item(display_text)
+	var display_text = room_info.get("name", "未知") + " (" + str(room_info.get("current_players", 0)) + "/" + str(room_info.get("max_players", 4)) + ")"
+	if room_list:
+		room_list.add_item(display_text)
 
 func _on_room_list_item_selected(index: int) -> void:
 	selected_room_index = index
-	join_btn.disabled = false
+	if join_btn:
+		join_btn.disabled = false
 
 func _on_room_list_empty_clicked() -> void:
 	selected_room_index = -1
-	join_btn.disabled = true
+	if join_btn:
+		join_btn.disabled = true
 
 # ==================== 创建房间面板 ====================
 
 func _on_create_confirm_btn_pressed() -> void:
 	AudioManager.play_button_click()
-	var room_name_arg = create_room_name.text.strip_edges()
+	var room_name_arg = ""
+	if create_room_name:
+		room_name_arg = create_room_name.text.strip_edges()
 	if room_name_arg.is_empty():
-		room_name_arg = player_name_edit.text + "的房间"
+		if player_name_edit:
+			room_name_arg = player_name_edit.text + "的房间"
+		else:
+			room_name_arg = "我的房间"
 	
-	var max_players = create_max_players.get_selected_id()
-	var port = int(create_port.value)
+	var max_players = 2
+	if create_max_players:
+		max_players = create_max_players.get_selected_id()
+	var port = NetworkManager.DEFAULT_PORT
+	if create_port:
+		port = int(create_port.value)
 	
 	# 设置玩家名并创建房间
-	var player_name = player_name_edit.text.strip_edges()
+	var player_name = "Player"
+	if player_name_edit:
+		player_name = player_name_edit.text.strip_edges()
 	if player_name.is_empty():
 		player_name = "Player"
 	network_mgr.set_player_name(player_name)
@@ -186,7 +218,8 @@ func _on_create_confirm_btn_pressed() -> void:
 	if success:
 		_show_waiting_panel()
 	else:
-		waiting_status.text = "创建房间失败"
+		if waiting_status:
+			waiting_status.text = "创建房间失败"
 
 func _on_create_cancel_btn_pressed() -> void:
 	AudioManager.play_button_click()
@@ -195,16 +228,21 @@ func _on_create_cancel_btn_pressed() -> void:
 # ==================== 等待房间面板 ====================
 
 func _update_waiting_panel() -> void:
-	if network_mgr.is_host:
-		waiting_room_name.text = network_mgr.room_name
-	else:
-		waiting_room_name.text = "已加入房间"
+	if waiting_room_name:
+		if network_mgr.is_host:
+			waiting_room_name.text = network_mgr.room_name
+		else:
+			waiting_room_name.text = "已加入房间"
 	
 	_update_waiting_player_list()
 	_update_start_button()
 
 func _update_waiting_player_list() -> void:
+	if not waiting_player_list:
+		return
 	waiting_player_list.clear()
+	if not network_mgr:
+		return
 	var players = network_mgr.get_all_players()
 	for peer_id in players:
 		var name = players[peer_id]
@@ -216,19 +254,24 @@ func _update_waiting_player_list() -> void:
 		waiting_player_list.add_item(prefix + name)
 	
 	if network_mgr.is_connected:
-		waiting_status.text = "已连接，等待玩家加入..."
+		if waiting_status:
+			waiting_status.text = "已连接，等待玩家加入..."
 	else:
-		waiting_status.text = "正在连接..."
+		if waiting_status:
+			waiting_status.text = "正在连接..."
 
 func _update_start_button() -> void:
 	# 只有主机可以开始游戏
-	waiting_start_btn.visible = network_mgr.is_host
-	if network_mgr.is_host:
-		waiting_start_btn.disabled = not network_mgr.can_start_game()
-		if network_mgr.can_start_game():
-			waiting_status.text = "可以开始游戏！"
-		else:
-			waiting_status.text = "需要至少2名玩家才能开始"
+	if waiting_start_btn:
+		waiting_start_btn.visible = network_mgr.is_host
+		if network_mgr.is_host:
+			waiting_start_btn.disabled = not network_mgr.can_start_game()
+	if waiting_status:
+		if network_mgr.is_host:
+			if network_mgr.can_start_game():
+				waiting_status.text = "可以开始游戏！"
+			else:
+				waiting_status.text = "需要至少2名玩家才能开始"
 
 func _on_player_connected(peer_id: int, player_name: String) -> void:
 	if current_state == "waiting":

@@ -12,8 +12,11 @@ func _process(delta: float) -> void:
 func getCards(num:int = 1)->Array[Card]:
 	cards.shuffle()
 	var count = min(cards.size(),num)
-	var result = cards.slice(0,count)
-	cards = cards.slice(count)
+	var result: Array[Card] = []
+	for i in range(count):
+		result.append(cards[i])
+	for i in range(count):
+		cards.remove_at(0)
 	update_count()
 	return result
 

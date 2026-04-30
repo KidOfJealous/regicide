@@ -15,8 +15,9 @@ var station:CardData.TurnStation:
 @onready var confirm_button: Button = $"../Button"
 
 const card_scene = preload("res://scenes/card.tscn")
-# Called when the node enters the scene tree for the first time.
+
 func _ready() -> void:
+	# @onready变量在_ready()后初始化，这里不需要额外操作
 	pass
 var card_size:
 	get:
@@ -64,8 +65,12 @@ func calc_pos(i: int, size: int):
 	var x_offset = screen_center_x + i * CardData.CARD_WIDTH - total_width / 2
 	return x_offset
 func remove_selected() -> void:
-	cards = cards.filter(func(c: Card): return not c.selected)
-	selected_cards = []
+	var new_cards: Array[Card] = []
+	for c in cards:
+		if not c.selected:
+			new_cards.append(c)
+	cards = new_cards
+	selected_cards.clear()
 	update_position()
 
 # 获取所有手牌（用于重抽功能）
@@ -74,8 +79,8 @@ func get_all_cards() -> Array[Card]:
 
 # 清空手牌（用于重抽功能）
 func clear_hand() -> void:
-	cards = []
-	selected_cards = []
+	cards.clear()
+	selected_cards.clear()
 	update_position()
 
 func get_selected() -> Array[Card]:
@@ -110,11 +115,14 @@ func update_button_state() -> void:
 		if discard_target > 0:
 			# 如果需要弃牌（目标值大于0），则检查选中牌的总和是否满足要求
 			var current_sum = selected_cards.reduce(CardData.sum, 0)
-			confirm_button.disabled = current_sum < discard_target
+			if confirm_button:
+				confirm_button.disabled = current_sum < discard_target
 		else:
 			# 如果不需要弃牌（目标值为0），按钮应始终可用
-			confirm_button.disabled = false
+			if confirm_button:
+				confirm_button.disabled = false
 	else:
 		# 玩家回合：允许不出牌（Yield功能）
 		# 按钮始终可用，不选牌时视为Yield
-		confirm_button.disabled = false
+		if confirm_button:
+			confirm_button.disabled = false

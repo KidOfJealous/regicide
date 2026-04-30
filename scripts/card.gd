@@ -1,13 +1,18 @@
 class_name Card extends Node2D
 signal hover
 const card_scene = preload("res://scenes/card.tscn")
-@onready var front_mask: ColorRect = $"front/ColorRect"
-@onready var animation_player: AnimationPlayer = $"AnimationPlayer"
+
+# 使用 get_node_or_null 而非 @onready，避免加载顺序问题
+var front_mask: ColorRect
+var animation_player: AnimationPlayer
+var _is_ready: bool = false  # 标记是否已完成_ready初始化
 
 # 悬停状态
 var hovered: bool:
 	set(b):
 		hovered = b
+		if not _is_ready:
+			return  # 未初始化时跳过
 		if b:
 			_animate_scale(CardData.HOVER_SCALE)
 			self.z_index = 2
@@ -20,6 +25,8 @@ var selected: bool:
 	set(value):
 		if selected != value:
 			selected = value
+			if not _is_ready:
+				return  # 未初始化时跳过
 			if selected:
 				_animate_scale(Vector2(1.1, 1.1))
 				self.z_index = 3
@@ -31,7 +38,10 @@ var selected: bool:
 var disabled: bool:
 	set(value):
 		disabled = value
-		front_mask.visible = disabled
+		if not _is_ready:
+			return  # 未初始化时跳过
+		if front_mask:
+			front_mask.visible = disabled
 		# 禁用时添加灰暗效果
 		if disabled:
 			self.modulate = Color(0.6, 0.6, 0.6, 1.0)
@@ -49,18 +59,31 @@ var joker_type: CardData.Joker = CardData.Joker.LITTE_JOKER
 var back: bool = false:
 	set(value):
 		back = value
+		if not _is_ready:
+			return  # 未初始化时跳过
 		$back.visible = back
 		$front.visible = !back
 var hand_position: Vector2
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
+	# 初始化节点引用
+	front_mask = get_node_or_null("front/ColorRect")
+	animation_player = get_node_or_null("AnimationPlayer")
+	_is_ready = true
 	self.get_parent().connect_card(self)
 	z_index = 1
 
 # 翻牌动画
 func flip():
-	animation_player.play("flip")
+	if not _is_ready:
+		# 未初始化时动态获取
+		var player = get_node_or_null("AnimationPlayer")
+		if player:
+			player.play("flip")
+		return
+	if animation_player:
+		animation_player.play("flip")
 
 # 平滑缩放动画
 func _animate_scale(target_scale: Vector2) -> void:
@@ -82,7 +105,7 @@ func animate_play() -> void:
 func animate_defeated() -> void:
 	var tween = create_tween()
 	tween.tween_property(self, "scale", Vector2(0.01, 0.01), 0.3).set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_QUAD)
-	tween.tween_callback(func(): queue_free())
+	# 注意：不在此处queue_free，由调用方处理卡牌节点
 static func init_card_scene(s: CardData.Suit = CardData.Suit.SPADE, num: CardData.CardNum = CardData.CardNum.ACE, b: bool = false) -> Card:
 	var card: Card = card_scene.instantiate()
 	card.rank = CardData.CardNumNames[num]

@@ -6,69 +6,89 @@ signal cards_played(cards: Array[Card])
 signal cards_discarded(cards: Array[Card])
 signal hand_changed(card_count: int)
 
-@onready var button:Button = $Button
-@onready var hand:Hand = $Hand
-@onready var status_label:Label = $StatusLabel
+# 使用普通变量而非@onready，避免加载顺序问题
+var button: Button
+var hand: Hand
+var status_label: Label
 
-# Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	pass
+	# 手动初始化节点引用
+	button = get_node_or_null("Button")
+	hand = get_node_or_null("Hand")
+	status_label = get_node_or_null("StatusLabel")
 
 func play_cards()->void:
-	hand.station = CardData.TurnStation.PLAYER
+	if hand:
+		hand.station = CardData.TurnStation.PLAYER
 	_update_status_label()
-	await button.pressed
+	if button:
+		await button.pressed
 	finish_play.emit()
 
 # ========== 卡牌操作接口 ==========
 
 # 添加卡牌到手牌
 func add_card_to_hand(card: Card) -> void:
-	hand.add_to_hand(card)
-	hand_changed.emit(hand.card_size)
+	if hand:
+		hand.add_to_hand(card)
+		hand_changed.emit(hand.card_size)
 
 # 等待玩家出牌
 func wait_for_play() -> Array[Card]:
-	hand.station = CardData.TurnStation.PLAYER
-	_update_status_label()
-	var selected = await hand.wait_for_user_play()
-	cards_played.emit(selected)
-	return selected
+	if hand:
+		hand.station = CardData.TurnStation.PLAYER
+		_update_status_label()
+		var selected = await hand.wait_for_user_play()
+		cards_played.emit(selected)
+		return selected
+	return [] as Array[Card]
 
 # 等待玩家弃牌
 func wait_for_discard(target: int) -> Array[Card]:
-	hand.station = CardData.TurnStation.DEFEND
-	_update_status_label(target)
-	var selected = await hand.wait_for_user_discard(target)
-	cards_discarded.emit(selected)
-	return selected
+	if hand:
+		hand.station = CardData.TurnStation.DEFEND
+		_update_status_label(target)
+		var selected = await hand.wait_for_user_discard(target)
+		cards_discarded.emit(selected)
+		return selected
+	return [] as Array[Card]
 
 # 移除已选中的卡牌
 func remove_selected_cards() -> void:
-	hand.remove_selected()
-	hand_changed.emit(hand.card_size)
+	if hand:
+		hand.remove_selected()
+		hand_changed.emit(hand.card_size)
 
 # 选择指定卡牌
 func select_card(card: Card) -> void:
-	hand.select_card(card)
+	if hand:
+		hand.select_card(card)
 
 # ========== 状态查询接口 ==========
 
 # 获取手牌数量
 func get_hand_card_count() -> int:
-	return hand.card_size
+	if hand:
+		return hand.card_size
+	return 0
 
 # 获取手牌点数总和
 func get_hand_card_sum() -> int:
-	return hand.card_sum
+	if hand:
+		return hand.card_sum
+	return 0
 
 # 检查是否可以添加卡牌（手牌上限检查）
 # limit参数可选，默认使用单人模式上限8张
 func can_add_card(limit: int = CardData.MAX_HAND_CARD_NUM) -> bool:
-	return hand.card_size < limit
+	if hand:
+		return hand.card_size < limit
+	return false
 
 # 更新状态标签文本
 func _update_status_label(discard_target: int = 0) -> void:
+	if not hand or not status_label:
+		return
 	if hand.station == CardData.TurnStation.PLAYER:
 		status_label.text = "请选择要出的牌（或不选择直接确认跳过）"
 	elif hand.station == CardData.TurnStation.DEFEND:

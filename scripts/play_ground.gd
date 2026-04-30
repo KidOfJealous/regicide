@@ -1,11 +1,12 @@
 extends Node2D
-@onready var player: Player = $"../Players/Player"
-@onready var end_turn_button_ref: EndTurnButton = $"../Button"
-@onready var boss_dec: BossDeck = $"../BossDeck"
-@onready var deck: Deck = $"../Deck"
-@onready var discard: Discard = $"../Discard"
-@onready var field: CardField = $"../CardField"
-@onready var card_manager_ref: CardManager = $"../CardManager"
+# 使用动态类型避免 "Could not find type" 错误
+@onready var player = $"../Players/Player"
+# Button 是 Player 的子节点，通过 player 访问
+@onready var boss_dec = $"../BossDeck"
+@onready var deck = $"../Deck"
+@onready var discard = $"../Discard"
+@onready var field = $"../CardField"
+@onready var card_manager_ref = $"../CardManager"
 
 var end:bool = false
 var station: CardData.TurnStation = CardData.TurnStation.PLAYER
@@ -24,7 +25,7 @@ var hand_size_limit: int  # 当前模式的手牌上限
 var joker_count: int  # 当前模式的Joker数量
 
 # ========== 多人网络相关 ========== 
-var network_mgr: NetworkManager = null
+var network_mgr = null  # 自动加载单例，动态类型
 var is_multiplayer: bool = false
 var my_peer_id: int = 1
 var is_my_turn: bool = true
@@ -52,7 +53,8 @@ func _input(event: InputEvent) -> void:
 			do_mulligan()
 			mulligan_used = true
 			mulligan_available = false
-			player._update_status_label()  # 恢复正常状态提示
+			if player:
+				player._update_status_label()  # 恢复正常状态提示
 
 func _process(delta):
 	# 在_process中检查是否所有依赖都已准备好
@@ -60,8 +62,8 @@ func _process(delta):
 		_try_initialize()
 
 func _try_initialize():
-	# 检查Player和其Hand是否都已初始化
-	if player != null and player.hand != null:
+	# 检查所有必要的节点引用是否都已初始化
+	if player != null and player.hand != null and card_manager_ref != null and deck != null and boss_dec != null:
 		is_initialized = true
 		set_process(false)  # 停止_process调用
 		# 初始化网络管理器
@@ -167,9 +169,13 @@ func _distribute_initial_hands() -> void:
 		if peer_id == my_peer_id:
 			# 主机自己的牌直接添加
 			for card in cards_to_send:
-				card_manager_ref.add_child(card)
+				if card_manager_ref:
+					card_manager_ref.add_child(card)
 				player.add_card_to_hand(card)
-				card.flip()
+				if card._is_ready:
+					card.flip()
+				else:
+					card.call_deferred("flip")
 			player_hand_counts[peer_id] = cards_to_send.size()
 		else:
 			# 发给其他玩家
@@ -294,11 +300,16 @@ func rpc_receive_hand(cards_data: Array) -> void:
 		var card = _deserialize_card(card_data)
 		if card:
 			cards.append(card)
-			card_manager_ref.add_child(card)  # 添加到场景
+			if card_manager_ref:
+				card_manager_ref.add_child(card)  # 添加到场景
 			player.hand.add_to_hand(card)
-			card.flip()  # 显示卡牌正面
+			if card._is_ready:
+				card.flip()  # 显示卡牌正面
+			else:
+				card.call_deferred("flip")  # 延迟调用确保初始化
 	player_hand_counts[my_peer_id] = cards.size()
-	player.hand.update_position()
+	if player.hand:
+		player.hand.update_position()
 
 # 同步玩家手牌数量（用于显示其他玩家手牌）
 @rpc("authority", "call_local")
@@ -335,7 +346,8 @@ func _check_mulligan() -> void:
 		# 更新状态提示
 		player._update_status_label()
 		# 在状态标签上显示Mulligan提示
-		player.status_label.text = "按M键进行Mulligan重抽，或选择牌开始游戏"
+		if player and player.status_label:
+			player.status_label.text = "按M键进行Mulligan重抽，或选择牌开始游戏"
 
 # Mulligan重抽：弃掉全部手牌重新抽取
 func do_mulligan() -> bool:
@@ -430,7 +442,7 @@ func card_effect(cards: Array[Card]) -> void:
 	if boss_dec.current_boss_health <= 0:
 		boss_to_deck(boss, boss_dec.current_boss_health == 0)
 		add_to_discard(field.cards)
-		field.cards = []
+		field.cards.clear()
 		field.fresh_pos()
 		if boss_dec._cards.size() > 0:  # 还有Boss牌
 			AudioManager.play_boss_spawn()  # 播放新Boss出现音效
@@ -584,6 +596,10 @@ func boss_to_deck(boss: Card, mercy: bool = false):
 	boss.animate_defeated()
 	await get_tree().create_timer(0.3).timeout  # 等待动画完成
 	
+	# 从父节点移除Boss卡牌（必须先移除，否则后续操作会崩溃）
+	if boss.get_parent():
+		boss.get_parent().remove_child(boss)
+	
 	# 重置Boss牌状态
 	boss.role = CardData.CardPosition.DECK
 	boss.card_type = CardData.CardType.BOSS  # 保持Boss类型标识
@@ -597,7 +613,9 @@ func boss_to_deck(boss: Card, mercy: bool = false):
 		# 恰好击败Boss，放回牌堆顶部
 		deck.put_boss_top(boss)
 	else:
-		# 超额伤害，放入弃牌堆
+		# 超额伤害，放入弃牌堆，需要添加到场景才能显示
+		if card_manager_ref:
+			card_manager_ref.add_child(boss)
 		discard.cards.push_back(boss)
 		discard.fresh_pos()
 
